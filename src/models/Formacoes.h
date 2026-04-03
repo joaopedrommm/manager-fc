@@ -56,20 +56,10 @@ const int MODIFICADOR_TATICO[NUM_FORMACOES][NUM_FORMACOES] = {
 // -----------------------------------------------------------------------
 // Retorna o índice de uma formação pelo nome (-1 se não encontrada)
 // -----------------------------------------------------------------------
-inline int indiceDaFormacao(const std::string& formacao) {
-    for (int i = 0; i < NUM_FORMACOES; i++) {
-        if (FORMACOES[i] == formacao) return i;
-    }
-    return -1;
-}
+int indiceDaFormacao(const std::string& formacao);
 
 // -----------------------------------------------------------------------
 // Retorna o modificador percentual de 'atacante' contra 'defensor'
 // Ex: getModificador("3-4-3", "5-4-1") retorna +10
 // -----------------------------------------------------------------------
-inline int getModificador(const std::string& atacante, const std::string& defensor) {
-    int i = indiceDaFormacao(atacante);
-    int j = indiceDaFormacao(defensor);
-    if (i == -1 || j == -1) return 0;
-    return MODIFICADOR_TATICO[i][j];
-}
+int getModificador(const std::string& atacante, const std::string& defensor);
