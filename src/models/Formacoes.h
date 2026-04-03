@@ -1,0 +1,75 @@
+#pragma once
+#include <string>
+
+// -----------------------------------------------------------------------
+// Formacoes disponíveis no Manager FC
+// -----------------------------------------------------------------------
+const int NUM_FORMACOES = 10;
+
+const std::string FORMACOES[NUM_FORMACOES] = {
+    "3-4-3",
+    "3-5-2",
+    "4-3-3",
+    "4-2-3-1",
+    "4-4-2",
+    "4-2-4",
+    "4-1-2-1-2",
+    "5-4-1",
+    "5-3-2",
+    "5-2-3"
+};
+
+// -----------------------------------------------------------------------
+// Matriz de modificadores táticos
+//
+// modificador[i][j] = bônus percentual que a formação i recebe ao enfrentar j
+// Valores positivos = vantagem, negativos = desvantagem
+// Range: +8 a +11 (vantagem) / -8 a -11 (desvantagem)
+// Diagonal = 0 (mesmo esquema, neutro)
+//
+// Índices:
+//   0 = 3-4-3
+//   1 = 3-5-2
+//   2 = 4-3-3
+//   3 = 4-2-3-1
+//   4 = 4-4-2
+//   5 = 4-2-4
+//   6 = 4-1-2-1-2
+//   7 = 5-4-1
+//   8 = 5-3-2
+//   9 = 5-2-3
+// -----------------------------------------------------------------------
+const int MODIFICADOR_TATICO[NUM_FORMACOES][NUM_FORMACOES] = {
+//        3-4-3  3-5-2  4-3-3  4-2-3-1  4-4-2  4-2-4  4-1-2-1-2  5-4-1  5-3-2  5-2-3
+/* 3-4-3    */ {  0,    -9,    -8,     0,     9,    -10,    -9,    10,    11,     0 },
+/* 3-5-2    */ {  9,     0,    10,    -9,    11,     0,    -8,    -9,     0,    -10 },
+/* 4-3-3    */ {  8,   -10,     0,    -9,    10,     9,    11,    -8,     0,     0  },
+/* 4-2-3-1  */ {  0,     9,     9,     0,   -10,     0,    -9,   -10,    11,    -8  },
+/* 4-4-2    */ { -9,   -11,   -10,    10,     0,     9,     8,     0,    -9,    11  },
+/* 4-2-4    */ { 10,     0,    -9,     0,    -9,     0,    -8,   -11,     8,    10  },
+/* 4-1-2-1-2*/ {  9,     8,   -11,     9,    -8,     8,     0,     0,   -10,    -9  },
+/* 5-4-1    */ {-10,     9,     8,    10,     0,    11,     0,     0,    -9,    -8  },
+/* 5-3-2    */ {-11,     0,     0,   -11,     9,    -8,    10,     9,     0,    -9  },
+/* 5-2-3    */ {  0,    10,     0,     8,   -11,   -10,     9,     8,     9,     0  }
+};
+
+// -----------------------------------------------------------------------
+// Retorna o índice de uma formação pelo nome (-1 se não encontrada)
+// -----------------------------------------------------------------------
+inline int indiceDaFormacao(const std::string& formacao) {
+    for (int i = 0; i < NUM_FORMACOES; i++) {
+        if (FORMACOES[i] == formacao) return i;
+    }
+    return -1;
+}
+
+// -----------------------------------------------------------------------
+// Retorna o modificador percentual de 'atacante' contra 'defensor'
+// Ex: getModificador("3-4-3", "5-4-1") retorna +10
+// -----------------------------------------------------------------------
+inline int getModificador(const std::string& atacante, const std::string& defensor) {
+    int i = indiceDaFormacao(atacante);
+    int j = indiceDaFormacao(defensor);
+    if (i == -1 || j == -1) return 0;
+    return MODIFICADOR_TATICO[i][j];
+}
