@@ -7,19 +7,11 @@
 #include "models/Simulacao.h"
 #include "structures/AVL.h"
 
-// -----------------------------------------------------------------------
-// Comparador da tabela do Brasileirao:
-// 1o criterio: pontos
-// 2o criterio: vitorias
-// 3o criterio: saldo de gols
-// 4o criterio: gols pro
-// Retorna > 0 se a é melhor que b (fica acima na tabela)
-// -----------------------------------------------------------------------
 int compararTimes(Time* const& a, Time* const& b) {
-    if (a->pontos    != b->pontos)    return a->pontos    - b->pontos;
-    if (a->vitorias  != b->vitorias)  return a->vitorias  - b->vitorias;
-    if (a->saldoGols() != b->saldoGols()) return a->saldoGols() - b->saldoGols();
-    return a->golsPro - b->golsPro;
+    if (a->getPontos()    != b->getPontos())    return a->getPontos()    - b->getPontos();
+    if (a->getVitorias()  != b->getVitorias())  return a->getVitorias()  - b->getVitorias();
+    if (a->getSaldoGols() != b->getSaldoGols()) return a->getSaldoGols() - b->getSaldoGols();
+    return a->getGolsPro() - b->getGolsPro();
 }
 
 void exibirTabela(const AVL<Time*>& tabela) {
@@ -39,39 +31,35 @@ void exibirTabela(const AVL<Time*>& tabela) {
 
     int pos = 1;
     tabela.forEach([&](Time* const& t) {
-        // Marcadores visuais
         std::string marca = "   ";
-        if (pos <= 6)       marca = "LIB";  // Libertadores
-        else if (pos <= 12) marca = "SUL";  // Sul-Americana
-        else if (pos >= 17) marca = "REL";  // Rebaixamento
+        if (pos <= 6)       marca = "LIB";
+        else if (pos <= 12) marca = "SUL";
+        else if (pos >= 17) marca = "REL";
 
         std::cout << std::left
                   << std::setw(4)  << pos
-                  << std::setw(22) << t->nome
-                  << std::setw(5)  << t->pontos
-                  << std::setw(5)  << t->vitorias
-                  << std::setw(5)  << t->empates
-                  << std::setw(5)  << t->derrotas
-                  << std::setw(5)  << t->golsPro
-                  << std::setw(5)  << t->golsContra
-                  << std::setw(5)  << t->saldoGols()
+                  << std::setw(22) << t->getNome()
+                  << std::setw(5)  << t->getPontos()
+                  << std::setw(5)  << t->getVitorias()
+                  << std::setw(5)  << t->getEmpates()
+                  << std::setw(5)  << t->getDerrotas()
+                  << std::setw(5)  << t->getGolsPro()
+                  << std::setw(5)  << t->getGolsContra()
+                  << std::setw(5)  << t->getSaldoGols()
                   << marca
                   << std::endl;
         pos++;
     });
-
     std::cout << "\nLIB = Libertadores | SUL = Sul-Americana | REL = Rebaixamento" << std::endl;
 }
 
 int main() {
     srand((unsigned)time(nullptr));
 
-    // Monta a AVL com o comparador do Brasileirao
     AVL<Time*> tabela(compararTimes);
     for (int i = 0; i < NUM_TIMES; i++)
         tabela.insert(&times[i]);
 
-    // Gera e simula o calendario completo
     Queue<Rodada*> calendario = gerarCalendario();
     std::cout << "Simulando temporada..." << std::endl;
 
@@ -79,28 +67,23 @@ int main() {
 
     while (!calendario.empty()) {
         Rodada* r = calendario.dequeue();
-        for (int i = 0; i < r->numPartidas; i++) {
-            // Remove os times da AVL antes de atualizar os stats
-            tabela.remove(r->partidas[i]->timeCasa);
-            tabela.remove(r->partidas[i]->timeVisitante);
+        for (int i = 0; i < r->getNumPartidas(); i++) {
+            Partida* p = r->getPartida(i);
+            tabela.remove(p->getTimeCasa());
+            tabela.remove(p->getTimeVisitante());
 
-            simularPartida(*r->partidas[i]);
-
-            totalGols += r->partidas[i]->golsCasa + r->partidas[i]->golsVisitante;
+            simularPartida(*p);
+            totalGols += p->getGolsCasa() + p->getGolsVisitante();
             totalPartidas++;
 
-            // Reinsere com stats atualizados
-            tabela.insert(r->partidas[i]->timeCasa);
-            tabela.insert(r->partidas[i]->timeVisitante);
-
-            delete r->partidas[i];
+            tabela.insert(p->getTimeCasa());
+            tabela.insert(p->getTimeVisitante());
+            delete p;
         }
         delete r;
     }
 
-    // Exibe tabela final
     exibirTabela(tabela);
-
     float media = (float)totalGols / totalPartidas;
     std::cout << "\nTotal de gols: " << totalGols
               << " | Media: " << std::fixed << std::setprecision(2) << media
