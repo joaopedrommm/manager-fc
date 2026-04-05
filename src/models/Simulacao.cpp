@@ -4,12 +4,12 @@
 #include <iostream>
 #include <iomanip>
 
-static float forcaEfetiva(const Time* time, const Time* adversario) {
+float Simulacao::forcaEfetiva(const Time* time, const Time* adversario) {
     int mod = Formacoes::getModificador(time->getFormacao(), adversario->getFormacao());
     return time->getForca() * (1.0f + mod / 100.0f);
 }
 
-static float probGolPorMinuto(const Time* atacante, const Time* defensor) {
+float Simulacao::probGolPorMinuto(const Time* atacante, const Time* defensor) {
     float fAtacante = forcaEfetiva(atacante, defensor);
     float fDefensor = forcaEfetiva(defensor, atacante);
     float forcaRel  = fAtacante / (fAtacante + fDefensor);
@@ -19,7 +19,7 @@ static float probGolPorMinuto(const Time* atacante, const Time* defensor) {
     return prob;
 }
 
-void simularPartida(Partida& p) {
+void Simulacao::simularPartida(Partida& p) {
     p.setGolsCasa(0);
     p.setGolsVisitante(0);
 
@@ -43,11 +43,11 @@ void simularPartida(Partida& p) {
     else if (gc < gv) { visit->addVitoria(); casa->addDerrota();  }
     else              { casa->addEmpate();   visit->addEmpate();  }
 
-    casa->addGolsPro(gc);    casa->addGolsContra(gv);
-    visit->addGolsPro(gv);   visit->addGolsContra(gc);
+    casa->addGolsPro(gc);     casa->addGolsContra(gv);
+    visit->addGolsPro(gv);    visit->addGolsContra(gc);
 }
 
-void exibirResultado(const Partida& p) {
+void Simulacao::exibirResultado(const Partida& p) {
     std::cout << std::left
               << std::setw(22) << p.getTimeCasa()->getNome()
               << p.getGolsCasa() << " x " << p.getGolsVisitante()

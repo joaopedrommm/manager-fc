@@ -56,6 +56,7 @@ void exibirTabela(const AVL<Time*>& tabela) {
 int main() {
     srand((unsigned)time(nullptr));
 
+    Simulacao simulacao;
     AVL<Time*> tabela(compararTimes);
     for (int i = 0; i < NUM_TIMES; i++)
         tabela.insert(&times[i]);
@@ -72,7 +73,7 @@ int main() {
             tabela.remove(p->getTimeCasa());
             tabela.remove(p->getTimeVisitante());
 
-            simularPartida(*p);
+            simulacao.simularPartida(*p);
             totalGols += p->getGolsCasa() + p->getGolsVisitante();
             totalPartidas++;
 

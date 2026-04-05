@@ -1,9 +1,12 @@
 #pragma once
 #include "Partida.h"
 
-// Simula uma partida minuto a minuto (90 iteracoes)
-// Preenche golsCasa, golsVisitante e marca simulada = true
-void simularPartida(Partida& p);
+class Simulacao {
+private:
+    float forcaEfetiva(const Time* time, const Time* adversario);
+    float probGolPorMinuto(const Time* atacante, const Time* defensor);
 
-// Exibe o resultado de uma partida
-void exibirResultado(const Partida& p);
+public:
+    void simularPartida(Partida& p);
+    void exibirResultado(const Partida& p);
+};
