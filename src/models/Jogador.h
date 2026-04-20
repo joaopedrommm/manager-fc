@@ -13,18 +13,37 @@
 //   dependendo do tipo concreto do objeto apontado pelo ponteiro Jogador*.
 // =============================================================================
 
+// =============================================================================
+// CONCEITO OOP: ENUM CLASS
+//   Agrupa constantes relacionadas em um tipo próprio com escopo, evitando
+//   colisões de nomes e tornando o código mais legível e seguro.
+//   Usado aqui para modelar o nível de agressividade individual do jogador,
+//   que influencia a probabilidade de receber cartões durante a partida.
+// =============================================================================
+enum class Agressividade {
+    BAIXA,  // jogador cauteloso  → menor chance de cartão
+    MEDIA,  // jogador equilibrado
+    ALTA    // jogador impulsivo  → maior chance de cartão
+};
+
 class Jogador {
 protected:
     // --- Atributos protegidos: visíveis para as classes filhas ---
-    int         id;
-    std::string nome;
-    std::string posicao;   // ex.: "GOL", "ZAG", "MEI", "ATA"
-    int         habilidade; // nota geral do jogador (0–100)
+    int          id;
+    std::string  nome;
+    std::string  posicao;      // ex.: "GOL", "ZAG", "MEI", "ATA"
+    int          habilidade;   // nota geral do jogador (0–100)
+    Agressividade agressividade; // nível de agressividade (afeta cartões)
 
 public:
-    // Construtor
-    Jogador(int id, const std::string& nome, const std::string& posicao, int habilidade)
-        : id(id), nome(nome), posicao(posicao), habilidade(habilidade) {}
+    // -------------------------------------------------------------------------
+    // Construtor: agressividade tem valor padrão MEDIA para manter
+    // compatibilidade com código já existente que não passou esse parâmetro.
+    // -------------------------------------------------------------------------
+    Jogador(int id, const std::string& nome, const std::string& posicao,
+            int habilidade, Agressividade agr = Agressividade::MEDIA)
+        : id(id), nome(nome), posicao(posicao),
+          habilidade(habilidade), agressividade(agr) {}
 
     // Destrutor virtual — OBRIGATÓRIO em classes base com polimorfismo.
     // Garante que ao deletar um Jogador* que aponta para Goleiro, o destrutor
@@ -45,11 +64,34 @@ public:
     // Retorna uma descrição textual do tipo do jogador.
     virtual std::string getTipo() const { return "Jogador"; }
 
+    // -------------------------------------------------------------------------
+    // getPExpulsao() — probabilidade POR MINUTO de receber cartão vermelho.
+    // Valores calibrados para média real de ~0.25 vermelhos/partida.
+    // Conforme especificação do algoritmo de simulação.
+    // -------------------------------------------------------------------------
+    float getPExpulsao() const {
+        switch (agressividade) {
+            case Agressividade::BAIXA: return 0.007f;
+            case Agressividade::MEDIA: return 0.0135f;
+            case Agressividade::ALTA:  return 0.020f;
+        }
+        return 0.0135f;
+    }
+
+    // -------------------------------------------------------------------------
+    // getPCartaoAmarelo() — probabilidade POR MINUTO de receber cartão amarelo.
+    // Menor que a do vermelho (conforme design do jogo).
+    // -------------------------------------------------------------------------
+    float getPCartaoAmarelo() const {
+        return getPExpulsao() * 0.5f;
+    }
+
     // --- Getters ---
-    int                getId()        const { return id; }
-    const std::string& getNome()      const { return nome; }
-    const std::string& getPosicao()   const { return posicao; }
-    int                getHabilidade() const { return habilidade; }
+    int                getId()           const { return id; }
+    const std::string& getNome()         const { return nome; }
+    const std::string& getPosicao()      const { return posicao; }
+    int                getHabilidade()   const { return habilidade; }
+    Agressividade      getAgressividade() const { return agressividade; }
 
     // Setter
     void setHabilidade(int h) { habilidade = h; }

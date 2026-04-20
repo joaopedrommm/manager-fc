@@ -21,9 +21,14 @@ private:
     int defesasPenalti; // especialidade em pênaltis (0–100)
 
 public:
+    // -------------------------------------------------------------------------
     // Construtor: chama o construtor da classe pai com ':  Jogador(...)'
-    Goleiro(int id, const std::string& nome, int habilidade, int reflexos, int defesasPenalti)
-        : Jogador(id, nome, "GOL", habilidade),
+    // agressividade tem padrão BAIXA — goleiros raramente recebem cartão por
+    // jogar agressivo. O valor pode ser alterado individualmente se necessário.
+    // -------------------------------------------------------------------------
+    Goleiro(int id, const std::string& nome, int habilidade, int reflexos, int defesasPenalti,
+            Agressividade agr = Agressividade::BAIXA)
+        : Jogador(id, nome, "GOL", habilidade, agr),
           reflexos(reflexos), defesasPenalti(defesasPenalti) {}
 
     // -------------------------------------------------------------------------
