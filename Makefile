@@ -1,21 +1,30 @@
-CXX = g++
+CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -I src
 
-SRC = src/main.cpp \
-      src/models/Campeonato.cpp \
-      src/models/Calendario.cpp \
-      src/models/Simulacao.cpp \
-      src/models/Formacoes.cpp
+# Fontes do jogo (compartilhadas entre terminal e servidor)
+SHARED = src/models/Campeonato.cpp \
+         src/models/Calendario.cpp \
+         src/models/Simulacao.cpp  \
+         src/models/Formacoes.cpp
 
-TARGET = manager-fc
+# ── Terminal (modo original) ──────────────────────────────────
+all: manager-fc
 
-all: $(TARGET)
+manager-fc: src/main.cpp $(SHARED)
+	$(CXX) $(CXXFLAGS) -o manager-fc src/main.cpp $(SHARED)
 
-$(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
+run: manager-fc
+	./manager-fc
 
+# ── Servidor Web ──────────────────────────────────────────────
+# Windows (MinGW): usa -lws2_32
+# Linux/Mac: troque -lws2_32 por -lpthread
+server: src/server.cpp $(SHARED)
+	$(CXX) $(CXXFLAGS) -o manager-fc-server src/server.cpp $(SHARED) -lws2_32
+
+run-server: server
+	./manager-fc-server
+
+# ── Limpeza ───────────────────────────────────────────────────
 clean:
-	rm -f $(TARGET)
-
-run: all
-	./$(TARGET)
+	rm -f manager-fc manager-fc-server manager-fc.exe manager-fc-server.exe

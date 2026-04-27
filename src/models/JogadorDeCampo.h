@@ -21,9 +21,11 @@ private:
     int chute;      // potência/precisão de chute (0–100)
 
 public:
+    // agressividade padrão MEDIA para jogadores de campo genéricos.
     JogadorDeCampo(int id, const std::string& nome, const std::string& posicao,
-                   int habilidade, int velocidade, int passe, int chute)
-        : Jogador(id, nome, posicao, habilidade),
+                   int habilidade, int velocidade, int passe, int chute,
+                   Agressividade agr = Agressividade::MEDIA)
+        : Jogador(id, nome, posicao, habilidade, agr),
           velocidade(velocidade), passe(passe), chute(chute) {}
 
     // -------------------------------------------------------------------------
@@ -52,9 +54,11 @@ public:
 // =============================================================================
 class Atacante : public JogadorDeCampo {
 public:
+    // Atacantes tendem a ser mais agressivos (disputas físicas pela bola).
     Atacante(int id, const std::string& nome, int habilidade,
-             int velocidade, int passe, int chute)
-        : JogadorDeCampo(id, nome, "ATA", habilidade, velocidade, passe, chute) {}
+             int velocidade, int passe, int chute,
+             Agressividade agr = Agressividade::MEDIA)
+        : JogadorDeCampo(id, nome, "ATA", habilidade, velocidade, passe, chute, agr) {}
 
     // Atacantes têm contribuição maior no chute e velocidade
     float calcularContribuicao(float forcaBase) const override {
@@ -71,9 +75,12 @@ public:
 // =============================================================================
 class Defensor : public JogadorDeCampo {
 public:
+    // Defensores com padrão ALTA — zagueiros e volantes são os mais
+    // frequentemente expulsos no futebol real.
     Defensor(int id, const std::string& nome, int habilidade,
-             int velocidade, int passe, int chute)
-        : JogadorDeCampo(id, nome, "ZAG", habilidade, velocidade, passe, chute) {}
+             int velocidade, int passe, int chute,
+             Agressividade agr = Agressividade::ALTA)
+        : JogadorDeCampo(id, nome, "ZAG", habilidade, velocidade, passe, chute, agr) {}
 
     // Defensores têm contribuição maior na habilidade geral e passe
     float calcularContribuicao(float forcaBase) const override {
