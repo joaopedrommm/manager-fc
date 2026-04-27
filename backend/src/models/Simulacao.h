@@ -1,12 +1,13 @@
 #pragma once
 #include "Partida.h"
+#include "ContextoPartida.h"
 
 class Simulacao {
 private:
-    float forcaEfetiva(const Time* time, const Time* adversario);
-    float probGolPorMinuto(const Time* atacante, const Time* defensor);
-
+    float calcularProbGol(const ContextoPartida& ctx,
+                          int ti, bool ehMandante) const;
 public:
-    void simularPartida(Partida& p);
-    void exibirResultado(const Partida& p);
+    void simularPartida(Partida& partida);
+    void exibirResultado(const Partida& partida) const;
+    void exibirEventos(const Partida& partida) const;
 };

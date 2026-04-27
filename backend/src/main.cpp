@@ -67,17 +67,18 @@ void preencherElenco(Time& t) {
     };
 
     // Cada 'new' cria um tipo diferente, mas todos são Jogador*
-    t.adicionarJogador(new Goleiro      ( 1, "Goleiro",       nota( 0), nota( 0), nota(-5)));
-    t.adicionarJogador(new Defensor     ( 2, "Zagueiro 1",    nota(-2), nota(-3), nota(-5), nota(-5)));
-    t.adicionarJogador(new Defensor     ( 3, "Zagueiro 2",    nota(-2), nota(-3), nota(-5), nota(-5)));
+    // Agressividades definidas por posição (influenciam cartões na simulação)
+    t.adicionarJogador(new Goleiro      ( 1, "Goleiro",     nota( 0), nota( 0), nota(-5), Agressividade::BAIXA));
+    t.adicionarJogador(new Defensor     ( 2, "Zagueiro 1",  nota(-2), nota(-3), nota(-5), nota(-5)));
+    t.adicionarJogador(new Defensor     ( 3, "Zagueiro 2",  nota(-2), nota(-3), nota(-5), nota(-5)));
     t.adicionarJogador(new JogadorDeCampo(4, "Lateral D", "LAT", nota(-3), nota( 2), nota(-2), nota(-5)));
     t.adicionarJogador(new JogadorDeCampo(5, "Lateral E", "LAT", nota(-3), nota( 2), nota(-2), nota(-5)));
-    t.adicionarJogador(new JogadorDeCampo(6, "Vol 1",     "VOL", nota(-1), nota(-2), nota( 0), nota(-3)));
-    t.adicionarJogador(new JogadorDeCampo(7, "Vol 2",     "VOL", nota(-1), nota(-2), nota( 0), nota(-3)));
-    t.adicionarJogador(new JogadorDeCampo(8, "Meia",      "MEI", nota( 2), nota( 0), nota( 3), nota( 0)));
+    t.adicionarJogador(new JogadorDeCampo(6, "Vol 1",     "VOL", nota(-1), nota(-2), nota( 0), nota(-3), Agressividade::ALTA));
+    t.adicionarJogador(new JogadorDeCampo(7, "Vol 2",     "VOL", nota(-1), nota(-2), nota( 0), nota(-3), Agressividade::ALTA));
+    t.adicionarJogador(new JogadorDeCampo(8, "Meia",      "MEI", nota( 2), nota( 0), nota( 3), nota( 0), Agressividade::BAIXA));
     t.adicionarJogador(new Atacante     ( 9, "Ala D",          nota( 0), nota( 4), nota(-1), nota( 2)));
     t.adicionarJogador(new Atacante     (10, "Ala E",          nota( 0), nota( 4), nota(-1), nota( 2)));
-    t.adicionarJogador(new Atacante     (11, "Centroavante",   nota( 3), nota( 1), nota(-2), nota( 5)));
+    t.adicionarJogador(new Atacante     (11, "Centroavante",   nota( 3), nota( 1), nota(-2), nota( 5), Agressividade::ALTA));
 }
 
 // =============================================================================
@@ -256,6 +257,13 @@ void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
 
         if (p == minhaPartida) std::cout << "*** ";
         sim.exibirResultado(*p);
+
+        // Exibe os lances da sua partida (gols, cartões, intervalo)
+        if (p == minhaPartida) {
+            std::cout << "\n--- Lance a lance ---" << std::endl;
+            sim.exibirEventos(*p);
+            std::cout << std::endl;
+        }
 
         // Guarda no histórico (lista encadeada)
         Resultado res;
