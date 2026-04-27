@@ -16,7 +16,7 @@ export default function App() {
           onVoltar={() => setTela('menu')}
           onConfirmar={(clube) => {
             setClubeSelecionado(clube);
-            setTela('simulacao');
+            setTela('dashboard');
           }}
         />
       )}
@@ -28,9 +28,16 @@ export default function App() {
         />
       )}
       {tela === 'simulacao' && (
-        <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-          <p className="text-white text-2xl">Simulação — {clubeSelecionado}</p>
-        </div>
+        <Simulacao
+          clube={clubeSelecionado}
+          onAvancar={() => setTela('pos-jogo')}
+        />
+      )}
+      {tela === 'pos-jogo' && (
+        <PosJogo
+          clube={clubeSelecionado}
+          onAvancar={() => setTela('dashboard')}
+        />
       )}
     </>
   );
