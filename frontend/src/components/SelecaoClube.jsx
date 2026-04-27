@@ -21,7 +21,7 @@ const times = [
   { nome: "Remo", arquivo: "remo" },
 ];
 
-export default function SelecaoClube({ onVoltar }) {
+export default function SelecaoClube({ onVoltar, onConfirmar}) {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
@@ -41,6 +41,7 @@ export default function SelecaoClube({ onVoltar }) {
           {times.map((time) => (
             <button
               key={time.nome}
+              onClick={() => onConfirmar(time.nome)}
               className="flex flex-col items-center gap-2 bg-white/10 hover:bg-blue-600/40 border border-white/20 hover:border-blue-500 py-4 px-2 rounded-2xl transition-all duration-200 backdrop-blur-sm"
             >
               <img
