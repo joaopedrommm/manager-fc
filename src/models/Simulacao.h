@@ -1,12 +1,17 @@
 #pragma once
 #include "Partida.h"
 
-class Simulacao {
-private:
-    float forcaEfetiva(const Time* time, const Time* adversario);
-    float probGolPorMinuto(const Time* atacante, const Time* defensor);
+// =============================================================================
+// Simulacao.h  —  Declaração da classe de simulação
+//
+// simularPartida()       → gera todos os eventos e atualiza o placar
+// exibirResultado()      → linha compacta (usada nas outras partidas da rodada)
+// exibirPartidaAoVivo()  → exibe o log completo minuto a minuto (jogo do jogador)
+// =============================================================================
 
+class Simulacao {
 public:
     void simularPartida(Partida& p);
     void exibirResultado(const Partida& p);
+    void exibirPartidaAoVivo(const Partida& p);
 };

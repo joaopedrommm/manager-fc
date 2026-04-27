@@ -1,76 +1,74 @@
 #include "Simulacao.h"
-#include "Formacoes.h"
+#include "ContextoPartida.h"
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
+#include <thread>
+#include <chrono>
 
-// =============================================================================
-// forcaEfetiva()
-//
-// Calcula a força efetiva de um time contra um adversário específico,
-// levando em conta:
-//   1. A força do elenco, calculada via polimorfismo (calcularForcaElenco)
-//   2. O modificador tático entre as duas formações escolhidas
-// =============================================================================
-float Simulacao::forcaEfetiva(const Time* time, const Time* adversario) {
-    // POLIMORFISMO EM AÇÃO: calcularForcaElenco() percorre o array de Jogador*
-    // e chama calcularContribuicao() em cada um — Goleiro usa reflexos,
-    // Atacante usa chute, Defensor usa habilidade... cada um do seu jeito.
-    float forcaElenco = time->calcularForcaElenco();
-
-    // Modificador tático: certas formações batem em outras
-    int mod = Formacoes::getModificador(time->getFormacao(), adversario->getFormacao());
-
-    return forcaElenco * (1.0f + mod / 100.0f);
-}
-
-// =============================================================================
-// probGolPorMinuto()
-//
-// Calcula a probabilidade de um time marcar em um determinado minuto.
-// Baseado na força relativa dos dois times.
-// =============================================================================
-float Simulacao::probGolPorMinuto(const Time* atacante, const Time* defensor) {
-    float fAtacante = forcaEfetiva(atacante, defensor);
-    float fDefensor = forcaEfetiva(defensor, atacante);
-    float forcaRel  = fAtacante / (fAtacante + fDefensor);
-
-    // Calibrado para uma média de ~2.8 gols/partida no Brasileirão
-    float prob = 0.01556f * (forcaRel / 0.5f);
-
-    // Limita para evitar resultados absurdos
-    if (prob < 0.004f) prob = 0.004f;
-    if (prob > 0.055f) prob = 0.055f;
-
-    return prob;
-}
-
-// =============================================================================
-// simularPartida()
-//
-// Simula os 90 minutos de uma partida, minuto a minuto.
-// Cada minuto tem uma chance de gol para cada time (aleatoriedade controlada).
-// Ao final, atualiza as estatísticas dos dois times.
-// =============================================================================
 void Simulacao::simularPartida(Partida& p) {
     p.setGolsCasa(0);
     p.setGolsVisitante(0);
 
-    for (int minuto = 1; minuto <= 90; minuto++) {
-        // Sorteio para o time da casa
-        float probCasa = probGolPorMinuto(p.getTimeCasa(), p.getTimeVisitante());
-        float randCasa = (rand() % 10000) / 10000.0f;
-        if (randCasa < probCasa) p.addGolCasa();
+    ContextoPartida ctx(p.getTimeCasa(), p.getTimeVisitante());
 
-        // Sorteio para o time visitante
-        float probVisit = probGolPorMinuto(p.getTimeVisitante(), p.getTimeCasa());
-        float randVisit = (rand() % 10000) / 10000.0f;
-        if (randVisit < probVisit) p.addGolVisitante();
+    int acrescimos   = 1 + (rand() % 5);
+    int duracaoTotal = 90 + acrescimos;
+
+    for (int minuto = 1; minuto <= duracaoTotal; minuto++) {
+
+        float fatorFase;
+        if      (minuto <= 15) fatorFase = 0.8f;
+        else if (minuto <= 75) fatorFase = 1.0f;
+        else                   fatorFase = 1.3f;
+
+        if (minuto == 46)
+            p.addEvento(new EventoIntervalo(45, p.getGolsCasa(), p.getGolsVisitante()));
+
+        // Cartao Vermelho
+        for (int t = 0; t < 2; t++) {
+            Time*    time = (t == 0) ? p.getTimeCasa() : p.getTimeVisitante();
+            Jogador* j    = ctx.getJogadorAleatorio(time);
+            if (!j) continue;
+            if ((rand() % 100000) / 100000.0f < j->getProbExpulsao()) {
+                p.addEvento(new EventoCartaoVermelho(minuto, time, j->getNome()));
+                ctx.expulsarJogador(time, j);
+            }
+        }
+
+        // Cartao Amarelo (probabilidade independente e maior)
+        for (int t = 0; t < 2; t++) {
+            Time*    time = (t == 0) ? p.getTimeCasa() : p.getTimeVisitante();
+            Jogador* j    = ctx.getJogadorAleatorio(time);
+            if (!j) continue;
+            if ((rand() % 100000) / 100000.0f < j->getProbAmarelo()) {
+                p.addEvento(new EventoCartaoAmarelo(minuto, time, j->getNome()));
+            }
+        }
+
+        // Gol casa
+        float probCasa = ctx.calcularProbGol(p.getTimeCasa(), p.getTimeVisitante())
+                       * fatorFase * 1.10f;
+        if ((rand() % 10000) / 10000.0f < probCasa) {
+            Jogador* g   = ctx.getJogadorAleatorio(p.getTimeCasa());
+            std::string n = g ? g->getNome() : "Jogador";
+            p.addEvento(new EventoGol(minuto, p.getTimeCasa(), n));
+            p.addGolCasa();
+        }
+
+        // Gol visitante
+        float probVisit = ctx.calcularProbGol(p.getTimeVisitante(), p.getTimeCasa())
+                        * fatorFase;
+        if ((rand() % 10000) / 10000.0f < probVisit) {
+            Jogador* g    = ctx.getJogadorAleatorio(p.getTimeVisitante());
+            std::string n = g ? g->getNome() : "Jogador";
+            p.addEvento(new EventoGol(minuto, p.getTimeVisitante(), n));
+            p.addGolVisitante();
+        }
     }
 
     p.setSimulada(true);
 
-    // Atualiza estatísticas dos times
     Time* casa  = p.getTimeCasa();
     Time* visit = p.getTimeVisitante();
     int gc = p.getGolsCasa(), gv = p.getGolsVisitante();
@@ -79,19 +77,87 @@ void Simulacao::simularPartida(Partida& p) {
     else if (gc < gv) { visit->addVitoria(); casa->addDerrota();  }
     else              { casa->addEmpate();   visit->addEmpate();  }
 
-    casa->addGolsPro(gc);     casa->addGolsContra(gv);
-    visit->addGolsPro(gv);    visit->addGolsContra(gc);
+    casa->addGolsPro(gc);    casa->addGolsContra(gv);
+    visit->addGolsPro(gv);   visit->addGolsContra(gc);
 }
 
-// =============================================================================
-// exibirResultado()
-//
-// Exibe no terminal o resultado de uma partida já simulada.
-// =============================================================================
 void Simulacao::exibirResultado(const Partida& p) {
     std::cout << std::left
               << std::setw(22) << p.getTimeCasa()->getNome()
               << p.getGolsCasa() << " x " << p.getGolsVisitante()
               << "  " << p.getTimeVisitante()->getNome()
               << std::endl;
+}
+
+// =============================================================================
+// exibirPartidaAoVivo()
+//
+// Exibe os minutos do jogo em tempo real:
+//   - Cada minuto aparece na tela com um pequeno delay (~200ms)
+//   - Quando há evento naquele minuto, é exibido na mesma linha
+//   - 90 minutos demoram ~20 segundos para passar
+// =============================================================================
+void Simulacao::exibirPartidaAoVivo(const Partida& p) {
+    int duracaoTotal = 90;
+    p.getLog().forEach([&](Evento* const& e) {
+        if (e->getMinuto() > duracaoTotal)
+            duracaoTotal = e->getMinuto();
+    });
+
+    int acrescimos = duracaoTotal - 90;
+
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "  " << p.getTimeCasa()->getNome()
+              << "  vs  " << p.getTimeVisitante()->getNome() << std::endl;
+    std::cout << "========================================\n" << std::endl;
+
+    for (int minuto = 1; minuto <= duracaoTotal; minuto++) {
+
+        // Aviso de acréscimos ao chegar no minuto 91
+        if (minuto == 91) {
+            std::cout << "\n  +++ " << acrescimos
+                      << " minuto(s) de acrescimo! +++" << std::endl;
+        }
+
+        // Cada minuto em sua própria linha
+        std::cout << std::right << std::setw(3) << minuto << "'";
+        std::cout.flush();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // Verifica eventos nesse minuto
+        bool temEvento = false;
+        p.getLog().forEach([&](Evento* const& e) {
+            if (e->getMinuto() != minuto) return;
+
+            if (e->getTipo() == "INTERVALO") {
+                std::cout << "\n" << std::endl;
+                std::cout << "  --------- INTERVALO ---------" << std::endl;
+                std::cout << "  " << e->getDescricao()         << std::endl;
+                std::cout << "  ------------------------------\n" << std::endl;
+            } else {
+                std::cout << " >>> ";
+                if      (e->getTipo() == "GOL")      std::cout << "[GOL]     ";
+                else if (e->getTipo() == "AMARELO")  std::cout << "[AMARELO] ";
+                else if (e->getTipo() == "VERMELHO") std::cout << "[VERMELHO]";
+
+                if (e->getTime())
+                    std::cout << " " << e->getTime()->getSigla() << " - ";
+
+                std::cout << e->getDescricao();
+            }
+            temEvento = true;
+        });
+
+        // Sempre pula linha ao final do minuto (display vertical)
+        std::cout << std::endl;
+    }
+
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "  RESULTADO FINAL: "
+              << p.getTimeCasa()->getNome()     << " "
+              << p.getGolsCasa()                << " x "
+              << p.getGolsVisitante()           << " "
+              << p.getTimeVisitante()->getNome() << std::endl;
+    std::cout << "========================================" << std::endl;
 }
