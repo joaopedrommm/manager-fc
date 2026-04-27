@@ -1,4 +1,4 @@
-export default function MenuPrincipal() {
+export default function MenuPrincipal({ onNovoJogo }) {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
@@ -23,7 +23,7 @@ export default function MenuPrincipal() {
 
         {/* Botões */}
         <div className="flex flex-col gap-3 w-72">
-          <button className="bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-900/60">
+          <button onClick={onNovoJogo} className="bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-900/60">
             Novo Jogo
           </button>
           <button className="bg-transparent border border-white/30 hover:border-white/60 text-white text-lg font-semibold py-4 rounded-2xl transition-all duration-200 backdrop-blur-sm">
