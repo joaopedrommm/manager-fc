@@ -4,7 +4,7 @@
 #include "../models/Time.h"
 
 // Jogadores do Athletico-PR — Brasileirão Série A 2026
-// OVERs definidos como 70 por padrão. Ajuste conforme necessário.
+
 
 void criarAthleticoPr(Time& time) {
     time.adicionarJogador(new Goleiro(1, "Mycael", 70, 70, 70));
