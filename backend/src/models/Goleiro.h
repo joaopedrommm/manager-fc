@@ -17,7 +17,7 @@ public:
           reflexos(reflexos), defesasPenalti(defesasPenalti) {}
 
     float calcularContribuicao(float forcaBase) const override {
-        float mediaGoleiro = (habilidade * 0.5f + reflexos * 0.5f);
+        float mediaGoleiro = (getHabilidade() * 0.5f + reflexos * 0.5f);
         return forcaBase * (mediaGoleiro / 100.0f);
     }
 

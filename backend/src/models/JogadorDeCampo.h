@@ -21,12 +21,12 @@ public:
           velocidade(velocidade), passe(passe), chute(chute) {}
 
     float calcularContribuicao(float forcaBase) const override {
-        float media = (habilidade * 0.4f + velocidade * 0.2f
+        float media = (getHabilidade() * 0.4f + velocidade * 0.2f
                      + passe * 0.2f      + chute * 0.2f);
         return forcaBase * (media / 100.0f);
     }
 
-    std::string getTipo() const override { return "Jogador de Campo (" + posicao + ")"; }
+    std::string getTipo() const override { return "Jogador de Campo (" + getPosicao() + ")"; }
 
     int getVelocidade() const { return velocidade; }
     int getPasse()      const { return passe; }
