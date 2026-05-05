@@ -16,7 +16,7 @@
 //   automaticamente qual versão do método chamar — isso é polimorfismo!
 // =============================================================================
 
-const int TAM_ELENCO = 11; // 11 titulares
+const int TAM_ELENCO = 23;
 
 class Time {
 private:

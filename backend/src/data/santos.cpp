@@ -3,30 +3,20 @@
 #include "../models/Goleiro.h"
 #include "../models/Time.h"
 
-// Jogadores do Santos — Brasileirão Série A 2026
-// OVERs definidos como 70 por padrão. Ajuste conforme necessário.
-
 void criarSantos(Time& time) {
-    time.adicionarJogador(new Goleiro(1, "Brazão", 70, 70, 70));
-    time.adicionarJogador(new Goleiro(2, "João Paulo", 70, 70, 70));
-    time.adicionarJogador(new Defensor(3, "Zé Ivaldo", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(4, "Luan Peres", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(5, "Adonis Frias", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(6, "João Basso", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(7, "Aderlan", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(8, "Souza", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(9, "Escobar", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(10, "Kevyson", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(11, "João Schmidt", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(12, "Tomás Rincón", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(13, "Diego Pituca", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(14, "Zé Rafael", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(15, "Rollheiser", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(16, "Gabriel Bontempo", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(17, "Lautaro Díaz", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(18, "Neymar", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(19, "Guilherme", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(20, "Barreal", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(21, "Tiquinho Soares", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(22, "Robinho Jr.", 70, 70, 70, 70));
+    time.adicionarJogador(new Goleiro(1, "Joao Paulo", 79, 79, 79));
+    time.adicionarJogador(new Defensor(2, "Escobar", 74, 74, 74, 74));
+    time.adicionarJogador(new Defensor(3, "Gil", 76, 76, 76, 76));
+    time.adicionarJogador(new Defensor(4, "Messias", 73, 73, 73, 73));
+    time.adicionarJogador(new Defensor(5, "Joao Basso", 73, 73, 73, 73));
+    time.adicionarJogador(new Defensor(6, "Kevyson", 72, 72, 72, 72));
+    time.adicionarJogador(new JogadorDeCampo(7, "Diego Pituca", "VOL", 77, 77, 77, 77, Agressividade::ALTA));
+    time.adicionarJogador(new JogadorDeCampo(8, "Giuliano", "VOL", 75, 75, 75, 75, Agressividade::BAIXA));
+    time.adicionarJogador(new JogadorDeCampo(9, "Soteldo", "MEI", 79, 79, 79, 79, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(10, "Sandry", "MEI", 76, 76, 76, 76, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(11, "Miguelito", "MEI", 74, 74, 74, 74, Agressividade::MEDIA));
+    time.adicionarJogador(new Atacante(12, "Furch", 75, 75, 75, 75));
+    time.adicionarJogador(new Atacante(13, "Guilherme", 76, 76, 76, 76));
+    time.adicionarJogador(new Atacante(14, "Lucas Barbosa", 73, 73, 73, 73));
+    time.adicionarJogador(new Atacante(15, "Willian Bigode", 73, 73, 73, 73));
 }

@@ -3,30 +3,20 @@
 #include "../models/Goleiro.h"
 #include "../models/Time.h"
 
-// Jogadores do Bragantino — Brasileirão Série A 2026
-// OVERs definidos como 70 por padrão. Ajuste conforme necessário.
-
 void criarBragantino(Time& time) {
-    time.adicionarJogador(new Goleiro(1, "Cleiton", 70, 70, 70));
-    time.adicionarJogador(new Goleiro(2, "Lucão", 70, 70, 70));
-    time.adicionarJogador(new Defensor(3, "Léo Ortiz", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(4, "Eduardo Santos", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(5, "Pedro Henrique", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(6, "Andrés Hurtado", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(7, "Guilherme Lopes", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(8, "Juninho Capixaba", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(9, "Nathan Mendes", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(10, "Lucas Evangelista", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(11, "Matheus Fernandes", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(12, "Praxedes", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(13, "Eric Ramires", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(14, "Jadsom Silva", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(15, "Lucas Barbosa", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(16, "Vinicinho", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(17, "Helinho", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(18, "Eduardo Sasha", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(19, "Vitinho", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(20, "Thiago Borbas", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(21, "Laquintana", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(22, "Mosquera", 70, 70, 70, 70));
+    time.adicionarJogador(new Goleiro(1, "Cleiton", 80, 80, 80));
+    time.adicionarJogador(new Defensor(2, "Andres Hurtado", 75, 75, 75, 75));
+    time.adicionarJogador(new Defensor(3, "Eduardo Santos", 74, 74, 74, 74));
+    time.adicionarJogador(new Defensor(4, "Pedro Henrique", 76, 76, 76, 76));
+    time.adicionarJogador(new Defensor(5, "Juninho Capixaba", 75, 75, 75, 75));
+    time.adicionarJogador(new Defensor(6, "Nathan Mendes", 73, 73, 73, 73));
+    time.adicionarJogador(new JogadorDeCampo(7, "Eric Ramires", "VOL", 76, 76, 76, 76, Agressividade::ALTA));
+    time.adicionarJogador(new JogadorDeCampo(8, "Lincoln", "VOL", 75, 75, 75, 75, Agressividade::ALTA));
+    time.adicionarJogador(new JogadorDeCampo(9, "Jhon Jhon", "MEI", 77, 77, 77, 77, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(10, "Lucas Evangelista", "MEI", 77, 77, 77, 77, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(11, "Gustavinho", "MEI", 73, 73, 73, 73, Agressividade::MEDIA));
+    time.adicionarJogador(new Atacante(12, "Vinicinho", 78, 78, 78, 78));
+    time.adicionarJogador(new Atacante(13, "Henry Mosquera", 76, 76, 76, 76));
+    time.adicionarJogador(new Atacante(14, "Eduardo Sasha", 75, 75, 75, 75));
+    time.adicionarJogador(new Atacante(15, "Helinho", 77, 77, 77, 77));
 }

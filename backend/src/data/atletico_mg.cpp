@@ -3,30 +3,20 @@
 #include "../models/Goleiro.h"
 #include "../models/Time.h"
 
-// Jogadores do Atlético-MG — Brasileirão Série A 2026
-// OVERs definidos como 70 por padrão. Ajuste conforme necessário.
-
 void criarAtleticoMg(Time& time) {
-    time.adicionarJogador(new Goleiro(1, "Everson", 70, 70, 70));
-    time.adicionarJogador(new Goleiro(2, "Gabriel Delfim", 70, 70, 70));
-    time.adicionarJogador(new Defensor(3, "Lyanco", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(4, "Junior Alonso", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(5, "Vitor Hugo", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(6, "Bruno Fuchs", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(7, "Saravia", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(8, "Natanael", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(9, "Guilherme Arana", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(10, "Caio Maia", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(11, "Otávio", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(12, "Igor Gomes", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(13, "Alan Franco", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(14, "Fausto Vera", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(15, "Alexsander", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(16, "Bernard", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(17, "Gustavo Scarpa", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(18, "Rony", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(19, "Hulk", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(20, "Cuello", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(21, "Cristian Pavón", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(22, "Biel", 70, 70, 70, 70));
+    time.adicionarJogador(new Goleiro(1, "Everson", 83, 83, 83));
+    time.adicionarJogador(new Defensor(2, "Saravia", 76, 76, 76, 76));
+    time.adicionarJogador(new Defensor(3, "Junior Alonso", 80, 80, 80, 80));
+    time.adicionarJogador(new Defensor(4, "Guilherme Arana", 81, 81, 81, 81));
+    time.adicionarJogador(new Defensor(5, "Natan", 77, 77, 77, 77));
+    time.adicionarJogador(new Defensor(6, "Mariano", 76, 76, 76, 76));
+    time.adicionarJogador(new JogadorDeCampo(7, "Fausto Vera", "VOL", 78, 78, 78, 78, Agressividade::ALTA));
+    time.adicionarJogador(new JogadorDeCampo(8, "Igor Gomes", "VOL", 76, 76, 76, 76, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(9, "Otavio", "MEI", 84, 84, 84, 84, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(10, "Gustavo Scarpa", "MEI", 80, 80, 80, 80, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(11, "Bernard", "MEI", 80, 80, 80, 80, Agressividade::BAIXA));
+    time.adicionarJogador(new Atacante(12, "Paulinho", 85, 85, 85, 85));
+    time.adicionarJogador(new Atacante(13, "Eduardo Vargas", 76, 76, 76, 76));
+    time.adicionarJogador(new Atacante(14, "Cadu", 74, 74, 74, 74));
+    time.adicionarJogador(new Atacante(15, "Palacios", 75, 75, 75, 75));
 }
