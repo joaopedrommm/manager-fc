@@ -8,7 +8,7 @@ enum class Agressividade {
 };
 
 class Jogador {
-protected:
+private:
     int           id;
     std::string   nome;
     std::string   posicao;
