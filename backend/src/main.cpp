@@ -23,6 +23,7 @@
 #include "models/JogadorDeCampo.h"
 #include "structures/AVL.h"
 #include "structures/LinkedList.h"
+#include "Database.h"
 
 // =============================================================================
 // Estrutura para guardar um resultado no histórico (lista encadeada)
@@ -307,6 +308,10 @@ void exibirHistorico(const LinkedList<Resultado>& historico,
 int main() {
     srand((unsigned)time(nullptr));
 
+    // Inicializa banco de dados
+    Database* db = Database::getInstance();
+    db->inicializar();
+
     std::cout << "============================================" << std::endl;
     std::cout << "         BEM-VINDO AO MANAGER FC!          " << std::endl;
     std::cout << "  Simulador do Campeonato Brasileiro 2026  " << std::endl;
@@ -401,5 +406,6 @@ int main() {
         }
     }
 
+    db->fechar();
     return 0;
 }
