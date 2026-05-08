@@ -20,14 +20,15 @@ const int TAM_ELENCO = 23;
 
 class Time {
 private:
+    //Atributos básicos do time
     int         id;
     std::string nome;
     std::string sigla;
-    int         forca;       // força média do time (0–100)
-    float       orcamento;   // orçamento disponível (milhões R$)
+    int         forca;       
+    float       orcamento;   
     std::string formacao;
 
-    // Estatísticas da temporada
+    //Estatísticas do time
     int pontos;
     int vitorias;
     int empates;
@@ -71,7 +72,7 @@ public:
         }
     }
 
-    // -------------------------------------------------------------------------
+    // Rever a utilidade
     // Adiciona um jogador ao elenco.
     // Recebe Jogador* — pode ser Goleiro*, Atacante*, Defensor*...
     // -------------------------------------------------------------------------
