@@ -1,7 +1,7 @@
 #pragma once
 #include "Partida.h"
 #include "Campeonato.h"
-#include "../structures/Queue.h"
+#include "../colecoes/Queue.h"
 
 const int NUM_RODADAS = 38;
 

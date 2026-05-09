@@ -1,15 +1,11 @@
 #pragma once
 #include <functional>
 
-// -----------------------------------------------------------------------
-// Árvore AVL genérica
-// Recebe um comparador customizável para definir a ordenação
-// Uso no Manager FC: ordenar times pela regra do Brasileirao
-// -----------------------------------------------------------------------
 template <typename T>
 class AVL {
 private:
-    struct Node {
+    class Node {
+    public:
         T data;
         Node* left;
         Node* right;
@@ -21,9 +17,6 @@ private:
     Node* root;
     int sz;
     std::function<int(const T&, const T&)> cmp;
-    // cmp(a, b): retorna < 0 se a < b, 0 se iguais, > 0 se a > b
-
-    // ---- Utilitários internos ----
 
     int height(Node* n) const {
         return n ? n->height : 0;
@@ -39,8 +32,6 @@ private:
         int rh = height(n->right);
         n->height = 1 + (lh > rh ? lh : rh);
     }
-
-    // ---- Rotações ----
 
     Node* rotateRight(Node* y) {
         Node* x  = y->left;
@@ -65,44 +56,29 @@ private:
     Node* balance(Node* n) {
         updateHeight(n);
         int bf = balanceFactor(n);
-
-        // Caso esquerda-esquerda
         if (bf > 1 && balanceFactor(n->left) >= 0)
             return rotateRight(n);
-
-        // Caso esquerda-direita
         if (bf > 1 && balanceFactor(n->left) < 0) {
             n->left = rotateLeft(n->left);
             return rotateRight(n);
         }
-
-        // Caso direita-direita
         if (bf < -1 && balanceFactor(n->right) <= 0)
             return rotateLeft(n);
-
-        // Caso direita-esquerda
         if (bf < -1 && balanceFactor(n->right) > 0) {
             n->right = rotateRight(n->right);
             return rotateLeft(n);
         }
-
         return n;
     }
 
-    // ---- Inserção ----
-
     Node* insert(Node* n, const T& val) {
         if (!n) { sz++; return new Node(val); }
-
         int c = cmp(val, n->data);
         if (c < 0)      n->left  = insert(n->left,  val);
         else if (c > 0) n->right = insert(n->right, val);
-        else            n->data  = val; // atualiza se já existe (mesmo time)
-
+        else            n->data  = val;
         return balance(n);
     }
-
-    // ---- Remoção ----
 
     Node* minNode(Node* n) {
         return n->left ? minNode(n->left) : n;
@@ -110,7 +86,6 @@ private:
 
     Node* remove(Node* n, const T& val) {
         if (!n) return nullptr;
-
         int c = cmp(val, n->data);
         if      (c < 0) n->left  = remove(n->left,  val);
         else if (c > 0) n->right = remove(n->right, val);
@@ -125,11 +100,8 @@ private:
             n->data  = successor->data;
             n->right = remove(n->right, successor->data);
         }
-
         return balance(n);
     }
-
-    // ---- Percurso em ordem (do maior para o menor = decrescente) ----
 
     void inorderDesc(Node* n, std::function<void(const T&)> visit) const {
         if (!n) return;
@@ -137,8 +109,6 @@ private:
         visit(n->data);
         inorderDesc(n->left, visit);
     }
-
-    // ---- Destruição ----
 
     void destroy(Node* n) {
         if (!n) return;
@@ -148,7 +118,6 @@ private:
     }
 
 public:
-    // Construtor: recebe o comparador
     AVL(std::function<int(const T&, const T&)> comparador)
         : root(nullptr), sz(0), cmp(comparador) {}
 
@@ -159,7 +128,6 @@ public:
     int  size()  const          { return sz; }
     bool empty() const          { return sz == 0; }
 
-    // Percorre do maior para o menor (classificacao do 1o ao último)
     void forEach(std::function<void(const T&)> visit) const {
         inorderDesc(root, visit);
     }

@@ -4,14 +4,15 @@
 template <typename T>
 class Queue {
 private:
-    struct Node {
+    class Node {
+    public:
         T data;
         Node* next;
         Node(const T& val) : data(val), next(nullptr) {}
     };
 
-    Node* head;  // frente da fila (proximo a sair)
-    Node* tail;  // fundo da fila (ultimo a entrar)
+    Node* head;
+    Node* tail;
     int sz;
 
 public:
@@ -21,7 +22,6 @@ public:
         while (!empty()) dequeue();
     }
 
-    // Insere no fundo da fila
     void enqueue(const T& val) {
         Node* no = new Node(val);
         if (tail) tail->next = no;
@@ -30,7 +30,6 @@ public:
         sz++;
     }
 
-    // Remove e retorna o elemento da frente
     T dequeue() {
         if (empty()) throw std::runtime_error("Queue vazia");
         T val = head->data;
@@ -42,7 +41,6 @@ public:
         return val;
     }
 
-    // Espia o elemento da frente sem remover
     T& front() {
         if (empty()) throw std::runtime_error("Queue vazia");
         return head->data;

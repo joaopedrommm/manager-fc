@@ -2,6 +2,9 @@
 #include <string>
 #include <cstdlib>
 
+// Evento é uma classe abstrata que tem como derivadas as 4 situações que nós julgamos como chaves durante uma partida. 
+// A classe Evento cumpre uma função puramente visual, sem alterar a lógica do jogo, mas causa um efeito de imersão.
+
 class Time;
 
 class Evento {
