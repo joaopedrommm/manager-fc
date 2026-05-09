@@ -15,11 +15,12 @@
 #include "models/Jogador.h"
 #include "models/Goleiro.h"
 #include "models/JogadorDeCampo.h"
-#include "structures/AVL.h"
-#include "structures/LinkedList.h"
+#include "colecoes/AVL.h"
+#include "colecoes/LinkedList.h"
 #include "data/elencos.h"
 
-struct Resultado {
+class Resultado {
+public:
     int         rodada;
     std::string timeCasa;
     std::string timeVisit;

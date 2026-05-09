@@ -24,9 +24,9 @@
 #include "models/Jogador.h"
 #include "models/Goleiro.h"
 #include "models/JogadorDeCampo.h"
-#include "structures/AVL.h"
-#include "structures/LinkedList.h"
-#include "structures/Queue.h"
+#include "colecoes/AVL.h"
+#include "colecoes/LinkedList.h"
+#include "colecoes/Queue.h"
 #include "data/elencos.h"
 
 // ---------------------------------------------------------------------------
@@ -68,7 +68,8 @@ static void preencherElencoReal(Time& t) {
 // ---------------------------------------------------------------------------
 // Resultado compacto para historico
 // ---------------------------------------------------------------------------
-struct ResPartida {
+class ResPartida {
+public:
     int rodada;
     std::string timeCasa, timeVisit;
     int golsCasa, golsVisit;
@@ -77,7 +78,8 @@ struct ResPartida {
 // ---------------------------------------------------------------------------
 // Estado global do jogo — persiste entre requisicoes HTTP
 // ---------------------------------------------------------------------------
-struct EstadoJogo {
+class EstadoJogo {
+public:
     bool            iniciado    = false;
     int             meuTimeId   = -1;
     AVL<Time*>*     tabela      = nullptr;
