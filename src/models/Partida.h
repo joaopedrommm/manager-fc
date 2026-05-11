@@ -1,7 +1,7 @@
 #pragma once
 #include "Time.h"
 #include "Evento.h"
-#include "../colecoes/LinkedList.h"
+#include "../structures/LinkedList.h"
 
 const int PARTIDAS_POR_RODADA = 10;
 

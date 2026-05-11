@@ -3,30 +3,20 @@
 #include "../models/Goleiro.h"
 #include "../models/Time.h"
 
-// Jogadores do Internacional — Brasileirão Série A 2026
-// OVERs definidos como 70 por padrão. Ajuste conforme necessário.
-
 void criarInternacional(Time& time) {
-    time.adicionarJogador(new Goleiro(1, "Sergio Rochet", 70, 70, 70));
-    time.adicionarJogador(new Goleiro(2, "Anthoni", 70, 70, 70));
-    time.adicionarJogador(new Defensor(3, "Vitão", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(4, "Mercado", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(5, "Juninho", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(6, "Clayton Sampaio", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(7, "Aguirre", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(8, "Bruno Tabata", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(9, "Bernabei", 70, 70, 70, 70));
-    time.adicionarJogador(new Defensor(10, "Ramon", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(11, "Fernando", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(12, "Thiago Maia", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(13, "Bruno Henrique", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(14, "Luis Otávio", "VOL", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(15, "Alan Patrick", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(16, "Wesley", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new JogadorDeCampo(17, "Vitinho", "MEI", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(18, "Borré", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(19, "Wanderson", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(20, "Carbonero", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(21, "Valencia", 70, 70, 70, 70));
-    time.adicionarJogador(new Atacante(22, "Ricardo Mathias", 70, 70, 70, 70));
+    time.adicionarJogador(new Goleiro(1, "Rochet", 83, 83, 83));
+    time.adicionarJogador(new Defensor(2, "Bustos", 76, 76, 76, 76));
+    time.adicionarJogador(new Defensor(3, "Mercado", 75, 75, 75, 75));
+    time.adicionarJogador(new Defensor(4, "Vitao", 78, 78, 78, 78));
+    time.adicionarJogador(new Defensor(5, "Rene", 76, 76, 76, 76));
+    time.adicionarJogador(new Defensor(6, "Robert Renan", 77, 77, 77, 77));
+    time.adicionarJogador(new JogadorDeCampo(7, "Thiago Maia", "VOL", 77, 77, 77, 77, Agressividade::ALTA));
+    time.adicionarJogador(new JogadorDeCampo(8, "Bruno Henrique", "VOL", 77, 77, 77, 77, Agressividade::ALTA));
+    time.adicionarJogador(new JogadorDeCampo(9, "Fernando", "MEI", 79, 79, 79, 79, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(10, "Alan Patrick", "MEI", 81, 81, 81, 81, Agressividade::MEDIA));
+    time.adicionarJogador(new JogadorDeCampo(11, "Carlos de Pena", "MEI", 75, 75, 75, 75, Agressividade::MEDIA));
+    time.adicionarJogador(new Atacante(12, "Enner Valencia", 79, 79, 79, 79));
+    time.adicionarJogador(new Atacante(13, "Rafael Borre", 80, 80, 80, 80));
+    time.adicionarJogador(new Atacante(14, "Wanderson", 76, 76, 76, 76));
+    time.adicionarJogador(new Atacante(15, "Alario", 73, 73, 73, 73));
 }

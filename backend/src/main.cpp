@@ -1,11 +1,5 @@
 // =============================================================================
 // main.cpp  —  Ponto de entrada do Manager FC
-//
-// Fluxo do jogo:
-//   1. Jogador escolhe seu clube dentre os 20 do Brasileirão
-//   2. O jogo preenche os elencos com jogadores usando polimorfismo
-//   3. Menu principal: ver elenco, mudar formação, melhorar time, jogar rodada
-//   4. Ao final das 38 rodadas: exibe campeão, rebaixados e classificados
 // =============================================================================
 
 #include <iostream>
@@ -21,13 +15,12 @@
 #include "models/Jogador.h"
 #include "models/Goleiro.h"
 #include "models/JogadorDeCampo.h"
-#include "structures/AVL.h"
-#include "structures/LinkedList.h"
+#include "colecoes/AVL.h"
+#include "colecoes/LinkedList.h"
+#include "data/elencos.h"
 
-// =============================================================================
-// Estrutura para guardar um resultado no histórico (lista encadeada)
-// =============================================================================
-struct Resultado {
+class Resultado {
+public:
     int         rodada;
     std::string timeCasa;
     std::string timeVisit;
@@ -35,55 +28,40 @@ struct Resultado {
     int         golsVisit;
 };
 
-// =============================================================================
-// Comparador para a AVL — ordena times pelo critério do Brasileirão:
-// pontos > vitórias > saldo > gols pró
-// =============================================================================
 int compararTimes(Time* const& a, Time* const& b) {
     if (a->getPontos()    != b->getPontos())    return a->getPontos()    - b->getPontos();
     if (a->getVitorias()  != b->getVitorias())  return a->getVitorias()  - b->getVitorias();
     if (a->getSaldoGols() != b->getSaldoGols()) return a->getSaldoGols() - b->getSaldoGols();
     if (a->getGolsPro()   != b->getGolsPro())   return a->getGolsPro()   - b->getGolsPro();
-    // Tiebreaker pelo ID: garante que cada time tenha posição única na AVL
     return b->getId() - a->getId();
 }
 
-// =============================================================================
-// preencherElenco()
-//
-// Cria jogadores via 'new' e os adiciona ao time.
-// POLIMORFISMO: adicionarJogador() recebe Jogador*, mas passamos
-// Goleiro*, Atacante*, Defensor* — cada um com comportamento diferente.
-// =============================================================================
-void preencherElenco(Time& t) {
-    int f = t.getForca();
-
-    // Gera habilidade com leve variação aleatória em torno da força do time
-    auto nota = [&](int bonus) -> int {
-        int v = f + bonus + (rand() % 11) - 5;
-        if (v < 40) v = 40;
-        if (v > 99) v = 99;
-        return v;
-    };
-
-    // Cada 'new' cria um tipo diferente, mas todos são Jogador*
-    // Agressividades definidas por posição (influenciam cartões na simulação)
-    t.adicionarJogador(new Goleiro      ( 1, "Goleiro",     nota( 0), nota( 0), nota(-5), Agressividade::BAIXA));
-    t.adicionarJogador(new Defensor     ( 2, "Zagueiro 1",  nota(-2), nota(-3), nota(-5), nota(-5)));
-    t.adicionarJogador(new Defensor     ( 3, "Zagueiro 2",  nota(-2), nota(-3), nota(-5), nota(-5)));
-    t.adicionarJogador(new JogadorDeCampo(4, "Lateral D", "LAT", nota(-3), nota( 2), nota(-2), nota(-5)));
-    t.adicionarJogador(new JogadorDeCampo(5, "Lateral E", "LAT", nota(-3), nota( 2), nota(-2), nota(-5)));
-    t.adicionarJogador(new JogadorDeCampo(6, "Vol 1",     "VOL", nota(-1), nota(-2), nota( 0), nota(-3), Agressividade::ALTA));
-    t.adicionarJogador(new JogadorDeCampo(7, "Vol 2",     "VOL", nota(-1), nota(-2), nota( 0), nota(-3), Agressividade::ALTA));
-    t.adicionarJogador(new JogadorDeCampo(8, "Meia",      "MEI", nota( 2), nota( 0), nota( 3), nota( 0), Agressividade::BAIXA));
-    t.adicionarJogador(new Atacante     ( 9, "Ala D",          nota( 0), nota( 4), nota(-1), nota( 2)));
-    t.adicionarJogador(new Atacante     (10, "Ala E",          nota( 0), nota( 4), nota(-1), nota( 2)));
-    t.adicionarJogador(new Atacante     (11, "Centroavante",   nota( 3), nota( 1), nota(-2), nota( 5), Agressividade::ALTA));
+// Substitui jogadores aleatorios pelos jogadores reais de cada time
+void preencherElencoReal(Time& t) {
+    switch (t.getId()) {
+        case  1: criarFlamengo(t);      break;
+        case  2: criarAtleticoMg(t);    break;
+        case  3: criarPalmeiras(t);     break;
+        case  4: criarFluminense(t);    break;
+        case  5: criarAthleticoPr(t);   break;
+        case  6: criarInternacional(t); break;
+        case  7: criarSaoPaulo(t);      break;
+        case  8: criarGremio(t);        break;
+        case  9: criarBotafogo(t);      break;
+        case 10: criarVasco(t);         break;
+        case 11: criarCorinthians(t);   break;
+        case 12: criarCruzeiro(t);      break;
+        case 13: criarBahia(t);         break;
+        case 14: criarSantos(t);        break;
+        case 15: criarBragantino(t);    break;
+        case 16: criarChapecoense(t);   break;
+        case 17: criarCoritiba(t);      break;
+        case 18: criarVitoria(t);       break;
+        case 19: criarMirassol(t);      break;
+        case 20: criarRemo(t);          break;
+    }
 }
 
-// =============================================================================
-// exibirTabela()
-// =============================================================================
 void exibirTabela(const AVL<Time*>& tabela) {
     std::cout << "\n=== Tabela de Classificacao ===" << std::endl;
     std::cout << std::left
@@ -123,9 +101,6 @@ void exibirTabela(const AVL<Time*>& tabela) {
     std::cout << "\nLIB=Libertadores | SUL=Sul-Americana | REL=Rebaixamento" << std::endl;
 }
 
-// =============================================================================
-// exibirElenco()
-// =============================================================================
 void exibirElenco(const Time& t) {
     std::cout << "\n=== Elenco: " << t.getNome()
               << " | Forca: " << t.getForca()
@@ -141,7 +116,6 @@ void exibirElenco(const Time& t) {
 
     for (int i = 0; i < t.getNumJogadores(); i++) {
         const Jogador* j = t.getJogador(i);
-        // getTipo() é virtual — mostra o tipo real de cada objeto
         std::cout << std::left
                   << std::setw(4)  << (i + 1)
                   << std::setw(18) << j->getNome()
@@ -152,9 +126,6 @@ void exibirElenco(const Time& t) {
     std::cout << "Formacao: " << t.getFormacao() << std::endl;
 }
 
-// =============================================================================
-// menuEscolherFormacao()
-// =============================================================================
 void menuEscolherFormacao(Time* meuTime) {
     const std::string formacoes[] = {
         "4-4-2", "4-3-3", "4-2-3-1", "3-5-2", "3-4-3",
@@ -176,10 +147,6 @@ void menuEscolherFormacao(Time* meuTime) {
     }
 }
 
-// =============================================================================
-// menuMelhorarElenco()
-// Gasta orçamento para aumentar a força do time.
-// =============================================================================
 void menuMelhorarElenco(Time* meuTime) {
     const float CUSTO = 15.0f;
     std::cout << "\n=== Melhorar Elenco ===" << std::endl;
@@ -212,7 +179,6 @@ void menuMelhorarElenco(Time* meuTime) {
 
 // =============================================================================
 // jogarRodada()
-// Simula uma rodada completa e registra resultados no histórico.
 // =============================================================================
 void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
                  Simulacao& sim, Time* meuTime,
@@ -226,7 +192,7 @@ void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
     numRodada = r->getNumero();
     std::cout << "\n====== Rodada " << numRodada << "/38 ======" << std::endl;
 
-    // Identifica a partida do jogador nessa rodada
+    // Identifica a partida do jogador
     Partida* minhaPartida = nullptr;
     for (int i = 0; i < r->getNumPartidas(); i++) {
         Partida* p = r->getPartida(i);
@@ -236,6 +202,7 @@ void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
         }
     }
 
+    // --- PASSO 1: simula e exibe o jogo do jogador ao vivo ---
     if (minhaPartida) {
         std::cout << "\n>>> Seu jogo: "
                   << minhaPartida->getTimeCasa()->getNome() << " vs "
@@ -243,11 +210,29 @@ void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
         std::cout << "Pressione Enter para simular...";
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cin.get();
+
+        tabela.remove(minhaPartida->getTimeCasa());
+        tabela.remove(minhaPartida->getTimeVisitante());
+        sim.simularPartida(*minhaPartida);
+        tabela.insert(minhaPartida->getTimeCasa());
+        tabela.insert(minhaPartida->getTimeVisitante());
+
+        sim.exibirPartidaAoVivo(*minhaPartida);
+
+        Resultado res;
+        res.rodada    = numRodada;
+        res.timeCasa  = minhaPartida->getTimeCasa()->getNome();
+        res.timeVisit = minhaPartida->getTimeVisitante()->getNome();
+        res.golsCasa  = minhaPartida->getGolsCasa();
+        res.golsVisit = minhaPartida->getGolsVisitante();
+        historico.pushBack(res);
     }
 
-    std::cout << "\n--- Resultados ---" << std::endl;
+    // --- PASSO 2: simula e mostra os outros jogos compactamente ---
+    std::cout << "\n--- Outros resultados ---" << std::endl;
     for (int i = 0; i < r->getNumPartidas(); i++) {
         Partida* p = r->getPartida(i);
+        if (p == minhaPartida) continue;
 
         tabela.remove(p->getTimeCasa());
         tabela.remove(p->getTimeVisitante());
@@ -255,17 +240,8 @@ void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
         tabela.insert(p->getTimeCasa());
         tabela.insert(p->getTimeVisitante());
 
-        if (p == minhaPartida) std::cout << "*** ";
         sim.exibirResultado(*p);
 
-        // Exibe os lances da sua partida (gols, cartões, intervalo)
-        if (p == minhaPartida) {
-            std::cout << "\n--- Lance a lance ---" << std::endl;
-            sim.exibirEventos(*p);
-            std::cout << std::endl;
-        }
-
-        // Guarda no histórico (lista encadeada)
         Resultado res;
         res.rodada    = numRodada;
         res.timeCasa  = p->getTimeCasa()->getNome();
@@ -276,12 +252,11 @@ void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
 
         delete p;
     }
+
+    if (minhaPartida) delete minhaPartida;
     delete r;
 }
 
-// =============================================================================
-// exibirHistorico()
-// =============================================================================
 void exibirHistorico(const LinkedList<Resultado>& historico,
                      const std::string& nomeTime) {
     std::cout << "\n=== Historico: " << nomeTime << " ===" << std::endl;
@@ -312,11 +287,9 @@ int main() {
     std::cout << "  Simulador do Campeonato Brasileiro 2026  " << std::endl;
     std::cout << "============================================" << std::endl;
 
-    // Preenche os elencos via polimorfismo
     for (int i = 0; i < NUM_TIMES; i++)
-        preencherElenco(times[i]);
+        preencherElencoReal(times[i]);
 
-    // Escolha do time pelo jogador
     std::cout << "\nEscolha seu clube:\n" << std::endl;
     for (int i = 0; i < NUM_TIMES; i++) {
         std::cout << std::setw(3) << (i + 1) << ". "
@@ -336,7 +309,6 @@ int main() {
     std::cout << "\nVoce escolheu: " << meuTime->getNome()
               << " | Formacao: " << meuTime->getFormacao() << std::endl;
 
-    // Inicializa estruturas
     Simulacao simulacao;
 
     AVL<Time*> tabela(compararTimes);
@@ -348,7 +320,6 @@ int main() {
 
     int rodadaAtual = 0;
 
-    // Loop principal do jogo
     while (true) {
         std::cout << "\n=======================================" << std::endl;
         std::cout << " Rodada " << rodadaAtual << "/38"
@@ -375,7 +346,6 @@ int main() {
         switch (op) {
             case 1:
                 if (calendario.empty()) {
-                    // Temporada acabou — mostra resultado final
                     std::cout << "\n========= FIM DA TEMPORADA =========" << std::endl;
                     exibirTabela(tabela);
                     std::cout << "\n--- Desfecho ---" << std::endl;

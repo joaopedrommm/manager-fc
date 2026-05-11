@@ -6,23 +6,17 @@
 #include <thread>
 #include <chrono>
 
-// Sempre que usamos p. é um ponteiro que usamos para acessar Partida.h
-// Sempre que usamos e. é um ponteiro que usamos para acessar Evento.h
-// Sempre que usamos ctx. estamos referenciando uma probalidade contida no ContextoPartida.h
-
 void Simulacao::simularPartida(Partida& p) {
     p.setGolsCasa(0);
     p.setGolsVisitante(0);
 
-    //Referência para calcular as probabilidades de ContextoPartida.h com os times da partida
     ContextoPartida ctx(p.getTimeCasa(), p.getTimeVisitante());
 
     int acrescimos   = 1 + (rand() % 5);
     int duracaoTotal = 90 + acrescimos;
-    
-    // Algoritmo de simulação minuto a minuto
+
     for (int minuto = 1; minuto <= duracaoTotal; minuto++) {
-        //Multiplicador da chance de gol de acordo com o momento do jogo
+
         float fatorFase;
         if      (minuto <= 15) fatorFase = 0.8f;
         else if (minuto <= 75) fatorFase = 1.0f;

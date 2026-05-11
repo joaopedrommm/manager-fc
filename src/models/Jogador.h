@@ -1,5 +1,3 @@
-// Classe abstrata para a entidade jogador, com os atributos e métodos comuns a todas as posições.
-
 #pragma once
 #include <string>
 
@@ -10,7 +8,7 @@ enum class Agressividade {
 };
 
 class Jogador {
-private:
+protected:
     int           id;
     std::string   nome;
     std::string   posicao;
@@ -48,13 +46,11 @@ public:
         }
     }
 
-    //Funções para acessar os atributos do jogador (getters)
     int                   getId()            const { return id; }
     const std::string&    getNome()          const { return nome; }
     const std::string&    getPosicao()       const { return posicao; }
     int                   getHabilidade()    const { return habilidade; }
     Agressividade         getAgressividade() const { return agressividade; }
 
-    //Funções para modificar os atributos do jogador (setters)
     void setHabilidade(int h) { habilidade = h; }
 };
