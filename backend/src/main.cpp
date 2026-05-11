@@ -28,6 +28,7 @@ public:
     int         golsVisit;
 };
 
+// Define os critérios de desempate entre duas equipas
 int compararTimes(Time* const& a, Time* const& b) {
     if (a->getPontos()    != b->getPontos())    return a->getPontos()    - b->getPontos();
     if (a->getVitorias()  != b->getVitorias())  return a->getVitorias()  - b->getVitorias();
@@ -62,6 +63,7 @@ void preencherElencoReal(Time& t) {
     }
 }
 
+// Mostra a tabela de classificação
 void exibirTabela(const AVL<Time*>& tabela) {
     std::cout << "\n=== Tabela de Classificacao ===" << std::endl;
     std::cout << std::left
@@ -101,6 +103,7 @@ void exibirTabela(const AVL<Time*>& tabela) {
     std::cout << "\nLIB=Libertadores | SUL=Sul-Americana | REL=Rebaixamento" << std::endl;
 }
 
+// Mostra o elenco do time, com detalhes de cada jogador
 void exibirElenco(const Time& t) {
     std::cout << "\n=== Elenco: " << t.getNome()
               << " | Forca: " << t.getForca()
@@ -126,6 +129,7 @@ void exibirElenco(const Time& t) {
     std::cout << "Formacao: " << t.getFormacao() << std::endl;
 }
 
+// Define a formação do time
 void menuEscolherFormacao(Time* meuTime) {
     const std::string formacoes[] = {
         "4-4-2", "4-3-3", "4-2-3-1", "3-5-2", "3-4-3",
@@ -147,6 +151,7 @@ void menuEscolherFormacao(Time* meuTime) {
     }
 }
 
+// Função para melhorar a força do elenco
 void menuMelhorarElenco(Time* meuTime) {
     const float CUSTO = 15.0f;
     std::cout << "\n=== Melhorar Elenco ===" << std::endl;
@@ -177,9 +182,7 @@ void menuMelhorarElenco(Time* meuTime) {
               << " | Orcamento restante: R$" << meuTime->getOrcamento() << "M" << std::endl;
 }
 
-// =============================================================================
-// jogarRodada()
-// =============================================================================
+// Entra na simulação da rodada
 void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
                  Simulacao& sim, Time* meuTime,
                  LinkedList<Resultado>& historico, int& numRodada) {
@@ -257,6 +260,7 @@ void jogarRodada(Queue<Rodada*>& calendario, AVL<Time*>& tabela,
     delete r;
 }
 
+// Mostra o histórico de partidas do time
 void exibirHistorico(const LinkedList<Resultado>& historico,
                      const std::string& nomeTime) {
     std::cout << "\n=== Historico: " << nomeTime << " ===" << std::endl;
@@ -276,9 +280,7 @@ void exibirHistorico(const LinkedList<Resultado>& historico,
         std::cout << "Nenhuma partida disputada ainda." << std::endl;
 }
 
-// =============================================================================
-// main()
-// =============================================================================
+
 int main() {
     srand((unsigned)time(nullptr));
 
@@ -287,9 +289,11 @@ int main() {
     std::cout << "  Simulador do Campeonato Brasileiro 2026  " << std::endl;
     std::cout << "============================================" << std::endl;
 
+    // Prepara os times com seus elencos reais
     for (int i = 0; i < NUM_TIMES; i++)
         preencherElencoReal(times[i]);
 
+    // Menu de escolha do time
     std::cout << "\nEscolha seu clube:\n" << std::endl;
     for (int i = 0; i < NUM_TIMES; i++) {
         std::cout << std::setw(3) << (i + 1) << ". "
@@ -305,6 +309,7 @@ int main() {
         std::cin >> escolha;
     } while (escolha < 1 || escolha > NUM_TIMES);
 
+    // Ponteiro para o time escolhido
     Time* meuTime = &times[escolha - 1];
     std::cout << "\nVoce escolheu: " << meuTime->getNome()
               << " | Formacao: " << meuTime->getFormacao() << std::endl;
@@ -320,6 +325,7 @@ int main() {
 
     int rodadaAtual = 0;
 
+    // Menu principal do jogo
     while (true) {
         std::cout << "\n=======================================" << std::endl;
         std::cout << " Rodada " << rodadaAtual << "/38"
@@ -338,12 +344,14 @@ int main() {
         int op;
         std::cin >> op;
 
+        // Saiu do jogo
         if (op == 0) {
             std::cout << "Ate a proxima temporada!" << std::endl;
             break;
         }
 
         switch (op) {
+            // Caso para o fim da temporada
             case 1:
                 if (calendario.empty()) {
                     std::cout << "\n========= FIM DA TEMPORADA =========" << std::endl;
@@ -359,6 +367,7 @@ int main() {
                         pos++;
                     });
                 } else {
+                    // Jogar Rodada como padrão
                     jogarRodada(calendario, tabela, simulacao, meuTime, historico, rodadaAtual);
                 }
                 break;
