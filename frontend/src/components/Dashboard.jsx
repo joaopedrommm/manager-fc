@@ -2,6 +2,19 @@ import { useState, useEffect } from 'react';
 
 const FORMACOES = ['4-4-2','4-3-3','4-2-3-1','3-5-2','3-4-3','4-2-4','5-4-1','5-3-2'];
 
+const LOGOS = {
+  1: 'flamengo', 2: 'atletico-mg', 3: 'palmeiras', 4: 'fluminense',
+  5: 'athletico-pr', 6: 'internacional', 7: 'sao-paulo', 8: 'gremio',
+  9: 'botafogo', 10: 'vasco', 11: 'corinthians', 12: 'cruzeiro',
+  13: 'bahia', 14: 'santos', 15: 'bragantino', 16: 'chapecoense',
+  17: 'coritiba', 18: 'vitoria', 19: 'mirassol', 20: 'remo'
+};
+
+function logoSrc(id) {
+  const arq = LOGOS[id] || 'flamengo';
+  return arq === 'gremio' ? '/times/gremio.svg' : `/times/${arq}.png`;
+}
+
 export default function Dashboard({ clube, onProximoJogo, onFimTemporada, onSairdoJogo }) {
   const [estado, setEstado] = useState(null);
   const [tabela, setTabela] = useState([]);
@@ -49,40 +62,67 @@ export default function Dashboard({ clube, onProximoJogo, onFimTemporada, onSair
     });
   };
 
-  if (!estado) return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Carregando...</div>;
+  if (!estado) return (
+    <div className="min-h-screen flex items-center justify-center"
+      style={{ background: 'radial-gradient(ellipse at top, #0f2027, #111827)' }}>
+      <div className="text-white text-lg font-semibold animate-pulse">Carregando...</div>
+    </div>
+  );
 
   const t = estado.meuTime;
   const custo = qtdMelhorar * 15;
+  const progressoRodada = (estado.rodadaAtual / 38) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen text-white" style={{ background: 'radial-gradient(ellipse at top, #0f2027, #111827)' }}>
+
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-extrabold text-blue-400">{t.nome}</h1>
-          <p className="text-gray-400 text-sm">{t.formacao} · Forca {t.forca} · R${t.orcamento.toFixed(1)}M</p>
+      <div style={{ background: 'linear-gradient(135deg, #0f2027 0%, #1a3a4a 100%)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+        className="px-6 py-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img src={logoSrc(clube?.id)} alt={t.nome} className="w-14 h-14 object-contain drop-shadow-lg" />
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight">{t.nome}</h1>
+              <p className="text-gray-400 text-xs mt-0.5">{t.formacao} · Força {t.forca} · R${t.orcamento.toFixed(1)}M</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-4xl font-black text-white">{t.pontos}</p>
+            <p className="text-gray-400 text-xs">pontos</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-2xl font-bold">{t.pontos} pts</p>
-          <p className="text-gray-400 text-sm">Rodada {estado.rodadaAtual}/38</p>
+
+        {/* Barra de progresso da temporada */}
+        <div className="max-w-4xl mx-auto mt-3">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Rodada {estado.rodadaAtual} de 38</span>
+            <span>{Math.round(progressoRodada)}%</span>
+          </div>
+          <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
+            <div className="h-full bg-blue-500 rounded-full transition-all duration-500"
+              style={{ width: `${progressoRodada}%` }} />
+          </div>
         </div>
       </div>
 
       {msg && (
-        <div className="bg-green-700 text-white text-sm text-center py-2 px-4">
-          {msg} <button className="ml-4 underline" onClick={() => setMsg('')}>ok</button>
+        <div className="bg-emerald-600/90 text-white text-sm text-center py-2 px-4 backdrop-blur">
+          {msg} <button className="ml-4 underline opacity-70 hover:opacity-100" onClick={() => setMsg('')}>ok</button>
         </div>
       )}
 
       <div className="max-w-4xl mx-auto px-4 py-6">
+
         {/* Nav */}
-        <div className="flex gap-2 mb-6 flex-wrap">
-          {[['main','Inicio'],['tabela','Tabela'],['elenco','Elenco']].map(([v, label]) => (
-            <button
-              key={v}
+        <div className="flex gap-2 mb-6">
+          {[['main', 'Início'], ['tabela', 'Tabela'], ['elenco', 'Elenco']].map(([v, label]) => (
+            <button key={v}
               onClick={() => v === 'tabela' ? abrirTabela() : v === 'elenco' ? abrirElenco() : setView('main')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${view === v ? 'bg-blue-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'}`}
-            >
+              className="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200"
+              style={view === v
+                ? { background: 'rgba(59,130,246,0.9)', color: 'white' }
+                : { background: 'rgba(255,255,255,0.06)', color: '#9ca3af' }}>
               {label}
             </button>
           ))}
@@ -90,41 +130,59 @@ export default function Dashboard({ clube, onProximoJogo, onFimTemporada, onSair
 
         {/* MAIN */}
         {view === 'main' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4">
+
+            {/* Botão principal */}
             {estado.encerrado ? (
-              <button
-                onClick={onFimTemporada}
-                className="col-span-2 bg-yellow-500 hover:bg-yellow-400 text-gray-900 rounded-2xl py-6 text-xl font-extrabold shadow-lg transition-all"
-              >
-                🏆 Ver Classificacao Final
+              <button onClick={onFimTemporada}
+                className="w-full py-6 rounded-2xl text-xl font-extrabold transition-all duration-200 shadow-xl"
+                style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)', color: '#111' }}>
+                🏆 Ver Classificação Final
               </button>
             ) : (
-              <button
-                onClick={onProximoJogo}
-                className="col-span-2 bg-blue-600 hover:bg-blue-500 rounded-2xl py-6 text-xl font-bold shadow-lg transition-all"
-              >
+              <button onClick={onProximoJogo}
+                className="w-full py-6 rounded-2xl text-xl font-bold transition-all duration-200 shadow-xl hover:scale-[1.01]"
+                style={{ background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)' }}>
                 ⚽ Jogar Rodada {estado.rodadaAtual + 1}
               </button>
             )}
-            <button onClick={() => setModal('formacao')} className="bg-gray-700 hover:bg-gray-600 rounded-2xl py-5 text-center font-semibold transition-all">
-              <div className="text-2xl mb-1">🗂</div>
-              Mudar Formacao
-              <div className="text-gray-400 text-sm mt-1">{t.formacao}</div>
-            </button>
-            <button onClick={() => setModal('melhorar')} className="bg-gray-700 hover:bg-gray-600 rounded-2xl py-5 text-center font-semibold transition-all">
-              <div className="text-2xl mb-1">📈</div>
-              Melhorar Elenco
-              <div className="text-gray-400 text-sm mt-1">R${t.orcamento.toFixed(1)}M disponivel</div>
-            </button>
-            <div className="col-span-2 bg-gray-800 rounded-2xl p-4 grid grid-cols-4 gap-4 text-center">
-              {[['V', t.vitorias, 'text-green-400'], ['E', t.empates, 'text-yellow-400'], ['D', t.derrotas, 'text-red-400'], ['SG', t.saldo, t.saldo >= 0 ? 'text-green-400' : 'text-red-400']].map(([label, val, color]) => (
-                <div key={label}>
-                  <div className={`text-2xl font-bold ${color}`}>{val}</div>
-                  <div className="text-gray-400 text-xs">{label}</div>
+
+            {/* Cards de stats */}
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { label: 'Vitórias', val: t.vitorias, color: '#4ade80' },
+                { label: 'Empates', val: t.empates, color: '#facc15' },
+                { label: 'Derrotas', val: t.derrotas, color: '#f87171' },
+                { label: 'Saldo', val: (t.saldo >= 0 ? '+' : '') + t.saldo, color: t.saldo >= 0 ? '#4ade80' : '#f87171' },
+              ].map(({ label, val, color }) => (
+                <div key={label} className="rounded-2xl p-4 text-center"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div className="text-3xl font-black" style={{ color }}>{val}</div>
+                  <div className="text-gray-500 text-xs mt-1">{label}</div>
                 </div>
               ))}
             </div>
-            <button onClick={onSairdoJogo} className="col-span-2 text-gray-500 hover:text-gray-300 text-sm underline text-center transition-all">
+
+            {/* Ações */}
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => setModal('formacao')}
+                className="rounded-2xl p-5 text-left transition-all hover:scale-[1.02]"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="text-2xl mb-2">🗂</div>
+                <div className="font-semibold text-sm">Formação</div>
+                <div className="text-gray-400 text-xs mt-0.5">{t.formacao}</div>
+              </button>
+              <button onClick={() => setModal('melhorar')}
+                className="rounded-2xl p-5 text-left transition-all hover:scale-[1.02]"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="text-2xl mb-2">📈</div>
+                <div className="font-semibold text-sm">Melhorar Elenco</div>
+                <div className="text-gray-400 text-xs mt-0.5">R${t.orcamento.toFixed(1)}M disponível</div>
+              </button>
+            </div>
+
+            <button onClick={onSairdoJogo}
+              className="w-full text-gray-600 hover:text-gray-400 text-xs text-center transition-all pt-2">
               Sair do jogo
             </button>
           </div>
@@ -132,100 +190,107 @@ export default function Dashboard({ clube, onProximoJogo, onFimTemporada, onSair
 
         {/* TABELA */}
         {view === 'tabela' && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-gray-400 border-b border-gray-700">
-                  <th className="text-left py-2 w-8">#</th>
-                  <th className="text-left py-2">Clube</th>
-                  <th className="py-2">Pts</th>
-                  <th className="py-2">V</th>
-                  <th className="py-2">E</th>
-                  <th className="py-2">D</th>
-                  <th className="py-2">SG</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tabela.map((tm) => {
-                  const isMe = tm.id === (estado.meuTime?.id);
-                  const zona = tm.pos <= 6 ? 'border-l-2 border-blue-500' : tm.pos >= 17 ? 'border-l-2 border-red-500' : tm.pos <= 12 ? 'border-l-2 border-green-500' : '';
-                  return (
-                    <tr key={tm.id} className={`border-b border-gray-800 ${isMe ? 'bg-blue-900/30' : 'hover:bg-gray-800'} ${zona}`}>
-                      <td className="py-2 pl-2 text-gray-400">{tm.pos}</td>
-                      <td className="py-2 font-semibold">{tm.nome}</td>
-                      <td className="py-2 text-center font-bold">{tm.pontos}</td>
-                      <td className="py-2 text-center text-green-400">{tm.vitorias}</td>
-                      <td className="py-2 text-center text-yellow-400">{tm.empates}</td>
-                      <td className="py-2 text-center text-red-400">{tm.derrotas}</td>
-                      <td className={`py-2 text-center ${tm.saldo >= 0 ? 'text-green-400' : 'text-red-400'}`}>{tm.saldo > 0 ? '+' : ''}{tm.saldo}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <p className="text-gray-600 text-xs mt-3">Azul=Libertadores · Verde=Sul-Americana · Vermelho=Rebaixamento</p>
+          <div>
+            <div className="space-y-1">
+              {tabela.map((tm) => {
+                const isMe = tm.id === estado.meuTime?.id;
+                const borderColor = tm.pos === 1 ? '#f59e0b' : tm.pos <= 6 ? '#3b82f6' : tm.pos <= 12 ? '#22c55e' : tm.pos >= 17 ? '#ef4444' : 'transparent';
+                return (
+                  <div key={tm.id}
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all"
+                    style={{
+                      background: isMe ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.03)',
+                      borderLeft: `3px solid ${borderColor}`,
+                      border: isMe ? '1px solid rgba(59,130,246,0.3)' : '1px solid transparent',
+                      borderLeftColor: borderColor,
+                    }}>
+                    <span className="text-gray-500 text-xs w-5 text-right">{tm.pos}</span>
+                    <img src={logoSrc(tm.id)} alt={tm.nome} className="w-6 h-6 object-contain" />
+                    <span className="flex-1 text-sm font-semibold">
+                      {tm.nome} {isMe && <span className="text-blue-400 text-xs">(você)</span>}
+                    </span>
+                    <span className="font-black text-sm w-8 text-right">{tm.pontos}</span>
+                    <span className="text-gray-500 text-xs w-20 text-right">{tm.vitorias}V {tm.empates}E {tm.derrotas}D</span>
+                    <span className={`text-xs w-8 text-right font-semibold ${tm.saldo >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {tm.saldo > 0 ? '+' : ''}{tm.saldo}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex gap-4 mt-4 text-xs text-gray-600 justify-center flex-wrap">
+              <span>🟡 Campeão</span>
+              <span>🔵 Libertadores</span>
+              <span>🟢 Sul-Americana</span>
+              <span>🔴 Rebaixamento</span>
+            </div>
           </div>
         )}
 
         {/* ELENCO */}
         {view === 'elenco' && (
-          <div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-gray-400 border-b border-gray-700">
-                  <th className="text-left py-2 w-8">#</th>
-                  <th className="text-left py-2">Nome</th>
-                  <th className="text-left py-2">Pos</th>
-                  <th className="py-2 text-right">HAB</th>
-                </tr>
-              </thead>
-              <tbody>
-                {elenco.map((j) => (
-                  <tr key={j.numero} className="border-b border-gray-800 hover:bg-gray-800">
-                    <td className="py-2 text-gray-500">{j.numero}</td>
-                    <td className="py-2 font-semibold">{j.nome}</td>
-                    <td className="py-2 text-gray-400">{j.tipo}</td>
-                    <td className="py-2 text-right text-blue-400 font-bold">{j.habilidade}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-1">
+            {elenco.map((j) => (
+              <div key={j.numero}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/5"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span className="text-gray-600 text-xs w-5">{j.numero}</span>
+                <span className="flex-1 text-sm font-semibold">{j.nome}</span>
+                <span className="text-gray-500 text-xs">{j.tipo}</span>
+                <span className="text-blue-400 font-black text-sm w-8 text-right">{j.habilidade}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
       {/* Modal Formacao */}
       {modal === 'formacao' && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-2xl p-6 w-80">
-            <h3 className="font-bold text-lg mb-4">Escolha a Formacao</h3>
+        <div className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
+          <div className="rounded-2xl p-6 w-80" style={{ background: '#1a2535', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <h3 className="font-bold text-lg mb-4">Escolha a Formação</h3>
             <div className="grid grid-cols-2 gap-2 mb-4">
               {FORMACOES.map(f => (
                 <button key={f} onClick={() => salvarFormacao(f)}
-                  className={`py-3 rounded-xl text-sm font-semibold transition-all ${t.formacao === f ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'}`}>
+                  className="py-3 rounded-xl text-sm font-semibold transition-all"
+                  style={t.formacao === f
+                    ? { background: '#2563eb' }
+                    : { background: 'rgba(255,255,255,0.06)' }}>
                   {f}
                 </button>
               ))}
             </div>
-            <button onClick={() => setModal(null)} className="w-full text-gray-400 hover:text-white text-sm underline">Cancelar</button>
+            <button onClick={() => setModal(null)} className="w-full text-gray-500 hover:text-white text-sm transition-all">Cancelar</button>
           </div>
         </div>
       )}
 
       {/* Modal Melhorar */}
       {modal === 'melhorar' && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-2xl p-6 w-80">
+        <div className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
+          <div className="rounded-2xl p-6 w-80" style={{ background: '#1a2535', border: '1px solid rgba(255,255,255,0.1)' }}>
             <h3 className="font-bold text-lg mb-1">Melhorar Elenco</h3>
-            <p className="text-gray-400 text-sm mb-4">R$15M por +1 de forca</p>
+            <p className="text-gray-500 text-sm mb-5">R$15M por +1 de força</p>
             <div className="flex items-center gap-4 justify-center mb-4">
-              <button onClick={() => setQtdMelhorar(q => Math.max(1, q - 1))} className="bg-gray-700 px-4 py-2 rounded-xl text-lg">-</button>
-              <span className="text-2xl font-bold w-12 text-center">{qtdMelhorar}</span>
-              <button onClick={() => setQtdMelhorar(q => q + 1)} className="bg-gray-700 px-4 py-2 rounded-xl text-lg">+</button>
+              <button onClick={() => setQtdMelhorar(q => Math.max(1, q - 1))}
+                className="w-10 h-10 rounded-xl text-lg font-bold transition-all"
+                style={{ background: 'rgba(255,255,255,0.08)' }}>−</button>
+              <span className="text-3xl font-black w-12 text-center">{qtdMelhorar}</span>
+              <button onClick={() => setQtdMelhorar(q => q + 1)}
+                className="w-10 h-10 rounded-xl text-lg font-bold transition-all"
+                style={{ background: 'rgba(255,255,255,0.08)' }}>+</button>
             </div>
-            <p className="text-center text-sm text-gray-400 mb-4">Custo: R${custo.toFixed(1)}M · Disponivel: R${t.orcamento.toFixed(1)}M</p>
-            <button onClick={confirmarMelhora} className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-semibold mb-2 transition-all">Confirmar</button>
-            <button onClick={() => setModal(null)} className="w-full text-gray-400 hover:text-white text-sm underline">Cancelar</button>
+            <p className="text-center text-xs text-gray-500 mb-5">
+              Custo: R${custo.toFixed(1)}M · Disponível: R${t.orcamento.toFixed(1)}M
+            </p>
+            <button onClick={confirmarMelhora}
+              className="w-full py-3 rounded-xl font-semibold mb-2 transition-all"
+              style={{ background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)' }}>
+              Confirmar
+            </button>
+            <button onClick={() => setModal(null)} className="w-full text-gray-500 hover:text-white text-sm transition-all">Cancelar</button>
           </div>
         </div>
       )}

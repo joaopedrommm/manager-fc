@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MenuPrincipal from './components/MenuPrincipal';
 import SelecaoClube from './components/SelecaoClube';
+import Creditos from './components/Creditos';
 import Dashboard from './components/Dashboard';
 import Simulacao from './components/Simulação';
 import PosJogo from './components/Pos-jogo';
@@ -24,7 +25,13 @@ export default function App() {
   return (
     <>
       {tela === 'menu' && (
-        <MenuPrincipal onNovoJogo={() => setTela('selecao')} />
+        <MenuPrincipal
+          onNovoJogo={() => setTela('selecao')}
+          onCreditos={() => setTela('creditos')}
+        />
+      )}
+      {tela === 'creditos' && (
+        <Creditos onVoltar={() => setTela('menu')} />
       )}
       {tela === 'selecao' && (
         <SelecaoClube
