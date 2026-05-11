@@ -3,7 +3,6 @@
 #include <cstdlib>
 
 // Evento é uma classe abstrata que tem como derivadas as 4 situações que nós julgamos como chaves durante uma partida. 
-// A classe Evento cumpre uma função puramente visual, sem alterar a lógica do jogo, mas causa um efeito de imersão.
 
 class Time;
 
@@ -12,15 +11,20 @@ protected:
     int   minuto;
     Time* time;
 public:
+    // Construtor e destrutor
     Evento(int minuto, Time* time) : minuto(minuto), time(time) {}
     virtual ~Evento() {}
 
+    // Abstração da classe Evento, pois o tipo e descrição dependem evento especifico
     virtual std::string getDescricao() const = 0;
     virtual std::string getTipo()      const = 0;
 
+    // Getters
     int   getMinuto() const { return minuto; }
     Time* getTime()   const { return time; }
 };
+
+// Retorna frases aleatórias para cada tipo de evento
 
 class EventoGol : public Evento {
 private:
@@ -86,6 +90,7 @@ public:
     }
 };
 
+// Retorna o placar do jogo no intervalo
 class EventoIntervalo : public Evento {
 private:
     int golsCasa;

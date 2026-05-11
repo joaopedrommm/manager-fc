@@ -22,7 +22,7 @@ void Simulacao::simularPartida(Partida& p) {
     
     // Algoritmo de simulação minuto a minuto
     for (int minuto = 1; minuto <= duracaoTotal; minuto++) {
-        //Multiplicador da chance de gol de acordo com o momento do jogo
+        // Multiplicador da chance de gol de acordo com o momento do jogo
         float fatorFase;
         if      (minuto <= 15) fatorFase = 0.8f;
         else if (minuto <= 75) fatorFase = 1.0f;
@@ -42,7 +42,7 @@ void Simulacao::simularPartida(Partida& p) {
             }
         }
 
-        // Cartao Amarelo (probabilidade independente e maior)
+        // Cartao Amarelo 
         for (int t = 0; t < 2; t++) {
             Time*    time = (t == 0) ? p.getTimeCasa() : p.getTimeVisitante();
             Jogador* j    = ctx.getJogadorAleatorio(time);
@@ -75,6 +75,7 @@ void Simulacao::simularPartida(Partida& p) {
 
     p.setSimulada(true);
 
+    // Lógica do placar final e atualização da tabela
     Time* casa  = p.getTimeCasa();
     Time* visit = p.getTimeVisitante();
     int gc = p.getGolsCasa(), gv = p.getGolsVisitante();
@@ -87,6 +88,7 @@ void Simulacao::simularPartida(Partida& p) {
     visit->addGolsPro(gv);   visit->addGolsContra(gc);
 }
 
+// Exibe o resultado final das outras partidas da rodada
 void Simulacao::exibirResultado(const Partida& p) {
     std::cout << std::left
               << std::setw(22) << p.getTimeCasa()->getNome()
@@ -95,14 +97,8 @@ void Simulacao::exibirResultado(const Partida& p) {
               << std::endl;
 }
 
-// =============================================================================
-// exibirPartidaAoVivo()
-//
-// Exibe os minutos do jogo em tempo real:
-//   - Cada minuto aparece na tela com um pequeno delay (~200ms)
-//   - Quando há evento naquele minuto, é exibido na mesma linha
-//   - 90 minutos demoram ~20 segundos para passar
-// =============================================================================
+
+// Exibe os minutos do jogo em tempo real
 void Simulacao::exibirPartidaAoVivo(const Partida& p) {
     int duracaoTotal = 90;
     p.getLog().forEach([&](Evento* const& e) {

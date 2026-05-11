@@ -36,15 +36,13 @@ private:
     int golsPro;
     int golsContra;
 
-    // -------------------------------------------------------------------------
     // Elenco de jogadores (ponteiros para a classe base Jogador).
-    // Polimorfismo: cada posição pode ter Goleiro, Atacante, Defensor etc.
-    // -------------------------------------------------------------------------
+
     Jogador* elenco[TAM_ELENCO];
     int      numJogadores; // quantos jogadores foram adicionados
 
 public:
-    // --- Construtor padrão ---
+    // Construtor padrão
     Time() : id(0), forca(0), orcamento(0.0f),
              pontos(0), vitorias(0), empates(0),
              derrotas(0), golsPro(0), golsContra(0),
@@ -52,7 +50,7 @@ public:
         for (int i = 0; i < TAM_ELENCO; i++) elenco[i] = nullptr;
     }
 
-    // --- Construtor completo ---
+    // Construtor completo
     Time(int id, const std::string& nome, const std::string& sigla,
          int forca, float orcamento, const std::string& formacao)
         : id(id), nome(nome), sigla(sigla), forca(forca),
@@ -63,8 +61,7 @@ public:
         for (int i = 0; i < TAM_ELENCO; i++) elenco[i] = nullptr;
     }
 
-    // --- Destrutor: libera a memória de cada jogador ---
-    // O 'delete' chama o destrutor correto graças ao virtual ~Jogador()
+    // Destrutor
     ~Time() {
         for (int i = 0; i < numJogadores; i++) {
             delete elenco[i];
@@ -74,19 +71,17 @@ public:
 
     // Rever a utilidade
     // Adiciona um jogador ao elenco.
-    // Recebe Jogador* — pode ser Goleiro*, Atacante*, Defensor*...
-    // -------------------------------------------------------------------------
+    // Recebe Jogador* — pode ser Goleiro*, Atacante*, Defensor*, etc.
     void adicionarJogador(Jogador* j) {
         if (numJogadores < TAM_ELENCO)
             elenco[numJogadores++] = j;
     }
 
-    // -------------------------------------------------------------------------
     // Calcula a força efetiva do time usando POLIMORFISMO.
     // Percorre o elenco e chama calcularContribuicao() em cada jogador.
     // O C++ chama a versão correta (Goleiro, Atacante, etc.) automaticamente.
     // Se o elenco estiver vazio, usa o valor fixo de 'forca'.
-    // -------------------------------------------------------------------------
+
     float calcularForcaElenco() const {
         if (numJogadores == 0) return (float)forca;
 
@@ -97,7 +92,7 @@ public:
         return total / numJogadores;
     }
 
-    // --- Getters ---
+    // Getters
     int                getId()           const { return id; }
     const std::string& getNome()         const { return nome; }
     const std::string& getSigla()        const { return sigla; }
@@ -118,12 +113,12 @@ public:
         return (i >= 0 && i < numJogadores) ? elenco[i] : nullptr;
     }
 
-    // --- Setters ---
+    // Setters
     void setFormacao(const std::string& f) { formacao = f; }
     void setForca(int f)                   { forca = f; }
     void setOrcamento(float o)             { orcamento = o; }
 
-    // --- Atualização de estatísticas ---
+    // Atualização de estatísticas
     void addVitoria()         { vitorias++; pontos += 3; }
     void addEmpate()          { empates++;  pontos += 1; }
     void addDerrota()         { derrotas++; }
