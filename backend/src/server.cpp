@@ -16,7 +16,11 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <chrono>
 #include <iomanip>
+#include <vector>
+#include <map>
+#include <tuple>
 
 #include "models/Campeonato.h"
 #include "models/Calendario.h"
@@ -66,11 +70,19 @@ static void preencherElencoReal(Time& t) {
 }
 
 // ---------------------------------------------------------------------------
+// Fixture snapshot (calendário completo)
+// ---------------------------------------------------------------------------
+struct FixtureInfo {
+    int rodada, casaId, visitId;
+};
+
+// ---------------------------------------------------------------------------
 // Resultado compacto para historico
 // ---------------------------------------------------------------------------
 class ResPartida {
 public:
     int rodada;
+    int casaId, visitId;
     std::string timeCasa, timeVisit;
     int golsCasa, golsVisit;
 };
@@ -87,6 +99,7 @@ public:
     Simulacao*      sim         = nullptr;
     LinkedList<ResPartida>* historico = nullptr;
     int             rodadaAtual = 0;
+    std::vector<FixtureInfo> fixtures;
 
     void reset() {
         // Drena e libera o calendario restante
@@ -106,6 +119,7 @@ public:
         iniciado    = false;
         meuTimeId   = -1;
         rodadaAtual = 0;
+        fixtures.clear();
         for (int i = 0; i < NUM_TIMES; i++) times[i].resetStats();
     }
 } jogo;
@@ -172,18 +186,38 @@ static std::string parseStrKey(const std::string& body, const std::string& key) 
 }
 
 // Drena Queue<Rodada*> gerada por gerarCalendario() para o heap
+// e salva snapshot de todas as partidas em jogo.fixtures
 static Queue<Rodada*>* alocarCalendario() {
-    Queue<Rodada*>  tmp = gerarCalendario();  // RVO — sem copia
+    Queue<Rodada*>  tmp = gerarCalendario();
     Queue<Rodada*>* cal = new Queue<Rodada*>();
-    while (!tmp.empty()) cal->enqueue(tmp.dequeue());
+    jogo.fixtures.clear();
+    std::vector<Rodada*> buf;
+    while (!tmp.empty()) {
+        Rodada* r = tmp.dequeue();
+        for (int i = 0; i < r->getNumPartidas(); i++) {
+            Partida* p = r->getPartida(i);
+            FixtureInfo fi;
+            fi.rodada  = r->getNumero();
+            fi.casaId  = p->getTimeCasa()->getId();
+            fi.visitId = p->getTimeVisitante()->getId();
+            jogo.fixtures.push_back(fi);
+        }
+        buf.push_back(r);
+    }
+    for (Rodada* r : buf) cal->enqueue(r);
     return cal;
 }
 
 // ---------------------------------------------------------------------------
 // main — registra rotas e sobe o servidor
 // ---------------------------------------------------------------------------
+static void reseedRand() {
+    auto ns = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    srand((unsigned)(ns ^ (ns >> 32)));
+}
+
 int main() {
-    srand((unsigned)time(nullptr));
+    reseedRand();
 
     std::cout << "Inicializando elencos..." << std::endl;
     for (int i = 0; i < NUM_TIMES; i++) preencherElencoReal(times[i]);
@@ -221,6 +255,7 @@ int main() {
             res.set_content("{\"erro\":\"id invalido\"}", "application/json");
             return;
         }
+        reseedRand();
         jogo.reset();
         jogo.iniciado    = true;
         jogo.meuTimeId   = id;
@@ -318,6 +353,7 @@ int main() {
             return;
         }
 
+        reseedRand();
         Rodada* r = jogo.calendario->dequeue();
         jogo.rodadaAtual = r->getNumero();
         Time* meuTime = &times[jogo.meuTimeId - 1];
@@ -346,6 +382,8 @@ int main() {
 
             ResPartida rp;
             rp.rodada   = jogo.rodadaAtual;
+            rp.casaId   = p->getTimeCasa()->getId();
+            rp.visitId  = p->getTimeVisitante()->getId();
             rp.timeCasa  = p->getTimeCasa()->getNome();
             rp.timeVisit = p->getTimeVisitante()->getNome();
             rp.golsCasa  = p->getGolsCasa();
@@ -357,6 +395,10 @@ int main() {
                 firstOutra = false;
                 std::ostringstream o;
                 o << "{"
+                  << "\"casaId\":"    << p->getTimeCasa()->getId()           << ","
+                  << "\"visitId\":"   << p->getTimeVisitante()->getId()      << ","
+                  << "\"siglaCasa\":" << q(p->getTimeCasa()->getSigla())     << ","
+                  << "\"siglaVisit\":" << q(p->getTimeVisitante()->getSigla()) << ","
                   << "\"timeCasa\":"  << q(p->getTimeCasa()->getNome())      << ","
                   << "\"timeVisit\":" << q(p->getTimeVisitante()->getNome()) << ","
                   << "\"golsCasa\":"  << p->getGolsCasa()                    << ","
@@ -391,6 +433,8 @@ int main() {
 
             std::ostringstream o;
             o << "{"
+              << "\"casaId\":"     << minhaPartida->getTimeCasa()->getId()            << ","
+              << "\"visitId\":"    << minhaPartida->getTimeVisitante()->getId()       << ","
               << "\"timeCasa\":"   << q(minhaPartida->getTimeCasa()->getNome())       << ","
               << "\"siglaCasa\":"  << q(minhaPartida->getTimeCasa()->getSigla())      << ","
               << "\"timeVisit\":"  << q(minhaPartida->getTimeVisitante()->getNome())  << ","
@@ -448,6 +492,71 @@ int main() {
         o << std::fixed << std::setprecision(1);
         o << "{\"ok\":true,\"forca\":" << t.getForca() << ",\"orcamento\":" << t.getOrcamento() << "}";
         res.set_content(o.str(), "application/json");
+    });
+
+    // -----------------------------------------------------------------------
+    // GET /api/calendario
+    // -----------------------------------------------------------------------
+    svr.Get("/api/calendario", [](const httplib::Request&, httplib::Response& res) {
+        cors(res);
+        if (!jogo.iniciado) {
+            res.set_content("{\"calendario\":[]}", "application/json");
+            return;
+        }
+
+        // Monta mapa de resultados: (casaId, visitId, rodada) -> gols
+        struct Res { int gc, gv; };
+        std::map<std::tuple<int,int,int>, Res> resultMap;
+        jogo.historico->forEach([&](const ResPartida& rp) {
+            resultMap[{rp.casaId, rp.visitId, rp.rodada}] = {rp.golsCasa, rp.golsVisit};
+        });
+
+        // Agrupa fixtures por rodada
+        std::map<int, std::vector<const FixtureInfo*>> byRodada;
+        for (const auto& fi : jogo.fixtures)
+            byRodada[fi.rodada].push_back(&fi);
+
+        std::string json = "{\"calendario\":[";
+        bool firstR = true;
+        for (auto& kv : byRodada) {
+            if (!firstR) json += ",";
+            firstR = false;
+            int rodada = kv.first;
+            json += "{\"rodada\":" + std::to_string(rodada) + ",\"jogos\":[";
+            bool firstJ = true;
+            for (const FixtureInfo* fi : kv.second) {
+                if (!firstJ) json += ",";
+                firstJ = false;
+                const Time& tc = times[fi->casaId  - 1];
+                const Time& tv = times[fi->visitId - 1];
+                auto key = std::make_tuple(fi->casaId, fi->visitId, fi->rodada);
+                bool jogado = resultMap.count(key) > 0;
+                bool meu    = (fi->casaId == jogo.meuTimeId || fi->visitId == jogo.meuTimeId);
+                std::ostringstream o;
+                o << "{"
+                  << "\"rodada\":"     << fi->rodada           << ","
+                  << "\"casaId\":"     << fi->casaId           << ","
+                  << "\"visitId\":"    << fi->visitId          << ","
+                  << "\"siglaCasa\":"  << q(tc.getSigla())     << ","
+                  << "\"siglaVisit\":" << q(tv.getSigla())     << ","
+                  << "\"timeCasa\":"   << q(tc.getNome())      << ","
+                  << "\"timeVisit\":"  << q(tv.getNome())      << ","
+                  << "\"jogado\":"     << (jogado ? "true" : "false") << ","
+                  << "\"meu\":"        << (meu    ? "true" : "false");
+                if (jogado) {
+                    const Res& r = resultMap[key];
+                    o << ",\"golsCasa\":"  << r.gc
+                      << ",\"golsVisit\":" << r.gv;
+                } else {
+                    o << ",\"golsCasa\":null,\"golsVisit\":null";
+                }
+                o << "}";
+                json += o.str();
+            }
+            json += "]}";
+        }
+        json += "]}";
+        res.set_content(json, "application/json");
     });
 
     // -----------------------------------------------------------------------

@@ -1,129 +1,108 @@
+import MFCShield from './MFCShield';
+
 export default function PosJogo({ resultado, onAvancar }) {
   if (!resultado) return null;
-
-  const mp = resultado.minhaPartida;
+  const mp     = resultado.minhaPartida;
   const rodada = resultado.rodada;
+  const gols   = mp ? mp.eventos.filter(e => e.tipo === 'GOL')                              : [];
+  const cards  = mp ? mp.eventos.filter(e => e.tipo === 'AMARELO' || e.tipo === 'VERMELHO') : [];
 
-  const gols = mp ? mp.eventos.filter(e => e.tipo === 'GOL') : [];
-  const cartoes = mp ? mp.eventos.filter(e => e.tipo === 'AMARELO' || e.tipo === 'VERMELHO') : [];
-
-  const vitoria = mp && mp.golsCasa > mp.golsVisit;
-  const derrota = mp && mp.golsCasa < mp.golsVisit;
-  const empate  = mp && mp.golsCasa === mp.golsVisit;
-
-  const resultadoTexto = !mp ? null
-    : vitoria ? 'Vitória!' : derrota ? 'Derrota' : 'Empate';
-
-  const gradiente = vitoria
-    ? 'linear-gradient(160deg, #0f2a1a 0%, #111827 60%)'
-    : derrota
-    ? 'linear-gradient(160deg, #2a0f0f 0%, #111827 60%)'
-    : 'linear-gradient(160deg, #1a1a2a 0%, #111827 60%)';
-
-  const accentColor = vitoria ? '#4ade80' : derrota ? '#f87171' : '#facc15';
+  let resTexto, resColor;
+  if (!mp)                          { resTexto = 'SEM JOGO';            resColor = 'var(--c-text-dim)'; }
+  else if (mp.golsCasa > mp.golsVisit) { resTexto = mp.siglaCasa + ' VENCEU'; resColor = 'var(--c-green-hi)'; }
+  else if (mp.golsCasa < mp.golsVisit) { resTexto = mp.siglaVisit + ' VENCEU'; resColor = 'var(--c-red-hi)'; }
+  else                              { resTexto = 'EMPATE';              resColor = 'var(--c-yellow-hi)'; }
 
   return (
-    <div className="min-h-screen text-white" style={{ background: gradiente }}>
+    <div className="mfc-screen" style={{ background: 'var(--c-bg)', display: 'flex', flexDirection: 'column' }}>
 
-      {/* Placar */}
-      <div className="px-6 pt-10 pb-8 text-center"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <p className="text-xs tracking-widest uppercase mb-6"
-          style={{ color: 'rgba(255,255,255,0.35)' }}>
-          Rodada {rodada} · Resultado Final
-        </p>
-
-        {mp ? (
-          <>
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="flex-1 text-right">
-                <p className="font-extrabold text-lg leading-tight">{mp.timeCasa}</p>
-              </div>
-
-              <div className="flex items-center gap-3 px-4 py-3 rounded-2xl"
-                style={{ background: 'rgba(255,255,255,0.06)', minWidth: 140 }}>
-                <span className="text-6xl font-black w-12 text-right">{mp.golsCasa}</span>
-                <span className="text-gray-600 text-2xl">×</span>
-                <span className="text-6xl font-black w-12 text-left">{mp.golsVisit}</span>
-              </div>
-
-              <div className="flex-1 text-left">
-                <p className="font-extrabold text-lg leading-tight">{mp.timeVisit}</p>
-              </div>
+      <div className="mfc-scoreboard">
+        <div className="mfc-xs-upper-dim" style={{ marginBottom: '8px', letterSpacing: '0.18em' }}>
+          RODADA {rodada} — RESULTADO FINAL
+        </div>
+        {mp && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '8px' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+              <span style={{ fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--c-text)' }}>{mp.timeCasa}</span>
+              <MFCShield teamId={mp.casaId} sigla={mp.siglaCasa} size={42} />
             </div>
-
-            <span className="text-lg font-extrabold px-5 py-1.5 rounded-full"
-              style={{ background: `${accentColor}22`, color: accentColor }}>
-              {resultadoTexto}
-            </span>
-          </>
-        ) : (
-          <p className="text-gray-500 text-sm">Sem jogo nessa rodada</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              <span className="mfc-score-digit">{mp.golsCasa}</span>
+              <span className="mfc-score-sep">×</span>
+              <span className="mfc-score-digit">{mp.golsVisit}</span>
+            </div>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px' }}>
+              <MFCShield teamId={mp.visitId} sigla={mp.siglaVisit} size={42} />
+              <span style={{ fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--c-text)' }}>{mp.timeVisit}</span>
+            </div>
+          </div>
         )}
+        <div style={{ color: resColor, fontSize: '13px', letterSpacing: '0.18em', fontWeight: 'bold' }}>
+          {resTexto}
+        </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-3">
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto', padding: '0 12px 16px' }}>
 
-        {/* Gols */}
-        {gols.length > 0 && (
-          <div className="rounded-2xl p-4"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-xs uppercase tracking-widest mb-3"
-              style={{ color: 'rgba(255,255,255,0.3)' }}>Gols</p>
-            <div className="space-y-2">
-              {gols.map((e, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm">
-                  <span className="text-green-400 font-bold w-8 text-right shrink-0">{e.minuto}'</span>
-                  <span>⚽</span>
-                  <span className="text-gray-300">{e.descricao}</span>
-                </div>
-              ))}
+          {gols.length > 0 && (
+            <div>
+              <div className="mfc-section-header"><span>GOLS</span></div>
+              <table className="mfc-table" style={{ width: '100%' }}>
+                <tbody>
+                  {gols.map((e, i) => (
+                    <tr key={i}>
+                      <td style={{ width: '38px', textAlign: 'center', color: 'var(--c-text-dim)', fontSize: '12px' }}>{e.minuto}'</td>
+                      <td style={{ width: '40px', textAlign: 'center', color: 'var(--c-green-hi)', fontSize: '11px' }}>GOL</td>
+                      <td style={{ color: 'var(--c-text-mid)' }}>{e.descricao}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Cartões */}
-        {cartoes.length > 0 && (
-          <div className="rounded-2xl p-4"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-xs uppercase tracking-widest mb-3"
-              style={{ color: 'rgba(255,255,255,0.3)' }}>Cartões</p>
-            <div className="space-y-2">
-              {cartoes.map((e, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm">
-                  <span className={`font-bold w-8 text-right shrink-0 ${e.tipo === 'VERMELHO' ? 'text-red-400' : 'text-yellow-400'}`}>
-                    {e.minuto}'
-                  </span>
-                  <span>{e.tipo === 'VERMELHO' ? '🟥' : '🟨'}</span>
-                  <span className="text-gray-300">{e.descricao}</span>
-                </div>
-              ))}
+          {cards.length > 0 && (
+            <div>
+              <div className="mfc-section-header"><span>CARTÕES</span></div>
+              <table className="mfc-table" style={{ width: '100%' }}>
+                <tbody>
+                  {cards.map((e, i) => (
+                    <tr key={i}>
+                      <td style={{ width: '38px', textAlign: 'center', color: 'var(--c-text-dim)', fontSize: '12px' }}>{e.minuto}'</td>
+                      <td style={{ width: '40px', textAlign: 'center', fontSize: '11px',
+                        color: e.tipo === 'VERMELHO' ? 'var(--c-red-hi)' : 'var(--c-yellow-hi)' }}>
+                        {e.tipo === 'VERMELHO' ? 'VM' : 'AM'}
+                      </td>
+                      <td style={{ color: 'var(--c-text-mid)' }}>{e.descricao}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Outros resultados */}
-        <div className="rounded-2xl p-4"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <p className="text-xs uppercase tracking-widest mb-3"
-            style={{ color: 'rgba(255,255,255,0.3)' }}>Outros resultados</p>
-          <div className="space-y-1">
-            {resultado.outrasPartidas.map((p, i) => (
-              <div key={i} className="flex items-center justify-between text-sm py-1.5"
-                style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <span className="text-gray-400 flex-1 text-right pr-3">{p.timeCasa}</span>
-                <span className="font-black text-white px-3 tabular-nums">{p.golsCasa} – {p.golsVisit}</span>
-                <span className="text-gray-400 flex-1 pl-3">{p.timeVisit}</span>
-              </div>
-            ))}
+          <div>
+            <div className="mfc-section-header"><span>OUTROS RESULTADOS — ROD. {rodada}</span></div>
+            <table className="mfc-table" style={{ width: '100%' }}>
+              <tbody>
+                {resultado.outrasPartidas.map((p, i) => (
+                  <tr key={i}>
+                    <td style={{ color: 'var(--c-text-mid)' }}>{p.timeCasa}</td>
+                    <td style={{ textAlign: 'center', fontWeight: 'bold', color: 'var(--c-score)', width: '60px' }}>
+                      {p.golsCasa} – {p.golsVisit}
+                    </td>
+                    <td style={{ color: 'var(--c-text-mid)', textAlign: 'right' }}>{p.timeVisit}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginTop: '16px' }}>
+            <button onClick={onAvancar} className="mfc-btn mfc-btn-play">PRÓXIMA RODADA →</button>
           </div>
         </div>
-
-        <button onClick={onAvancar}
-          className="w-full py-4 rounded-2xl font-bold text-lg transition-all hover:scale-[1.01]"
-          style={{ background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)' }}>
-          Próxima Rodada →
-        </button>
       </div>
     </div>
   );

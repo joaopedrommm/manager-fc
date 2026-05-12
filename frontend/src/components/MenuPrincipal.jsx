@@ -1,34 +1,58 @@
-export default function MenuPrincipal({ onNovoJogo, onCreditos }) {
+import MFCShield from './MFCShield';
+
+const TEAM_IDS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+
+const TIMES_SIGLAS = {
+  1:'FLA',2:'CAM',3:'PAL',4:'FLU',5:'CAP',6:'INT',7:'SAO',8:'GRE',9:'BOT',10:'VAS',
+  11:'COR',12:'CRU',13:'BAH',14:'SAN',15:'RBB',16:'CHA',17:'CFC',18:'VIT',19:'MIR',20:'REM',
+};
+
+export default function MenuPrincipal({  onNovoJogo, onCreditos }) {
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
-      style={{ backgroundImage: "url('/estadio.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
-    >
-      <div className="absolute inset-0 bg-black opacity-60" />
+    <div className="mfc-screen" style={{
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      position: 'relative', overflow: 'hidden',
+      backgroundColor: 'var(--c-bg)',
+      backgroundImage: 'url("/estadio.jpg")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    }}>
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'linear-gradient(180deg, rgba(6,13,6,0.78) 0%, rgba(6,13,6,0.55) 40%, rgba(6,13,6,0.85) 100%)',
+      }} />
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: 'repeating-linear-gradient(0deg,rgba(0,0,0,0.18) 0px,rgba(0,0,0,0.18) 1px,transparent 1px,transparent 3px)',
+      }} />
 
-      <div className="relative z-10 flex flex-col items-center">
-        <div className="text-6xl mb-6">⚽</div>
+      <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
+        <div className="mfc-menu-eyebrow">BRASILEIRAO SERIE A 2026</div>
+        <div className="mfc-menu-logo">MANAGER FC</div>
+        <div className="mfc-menu-tagline">gerencie seu clube ao topo</div>
 
-        <h1 className="text-white text-6xl font-extrabold tracking-tight mb-2">
-          Manager <span className="text-blue-400">FC</span>
-        </h1>
-        <p className="text-gray-300 text-sm mb-12 tracking-widest uppercase">
-          Gerencie seu clube ao topo
-        </p>
+        <div style={{
+          display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px',
+          maxWidth: '560px', margin: '0 auto 28px', opacity: 0.92,
+        }}>
+          {TEAM_IDS.map(id => (
+            <MFCShield key={id} teamId={id} sigla={TIMES_SIGLAS[id]} size={28} />
+          ))}
+        </div>
 
-        <div className="flex flex-col gap-3 w-72">
-          <button onClick={onNovoJogo} className="bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-900/60">
-            Novo Jogo
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '300px', margin: '0 auto' }}>
+          <button className="mfc-btn mfc-btn-primary mfc-btn-lg" onClick={onNovoJogo}>
+            ▶ NOVO JOGO
           </button>
-          <button onClick={onCreditos} className="bg-transparent border border-white/30 hover:border-white/60 text-white text-lg font-semibold py-4 rounded-2xl transition-all duration-200 backdrop-blur-sm">
-            Créditos
+          <button className="mfc-btn mfc-btn-lg" onClick={onCreditos}>
+            CRÉDITOS
           </button>
         </div>
       </div>
 
-      <p className="absolute bottom-6 text-white/30 text-xs tracking-widest uppercase z-10">
-        v0.1.0 — CIn/UFPE
-      </p>
+      <div className="mfc-menu-version">v0.2.0 — CIn/UFPE</div>
     </div>
   );
 }

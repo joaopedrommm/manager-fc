@@ -1,94 +1,88 @@
 import { useState, useEffect } from 'react';
-
-const LOGOS = {
-  1: 'flamengo', 2: 'atletico-mg', 3: 'palmeiras', 4: 'fluminense',
-  5: 'athletico-pr', 6: 'internacional', 7: 'sao-paulo', 8: 'gremio',
-  9: 'botafogo', 10: 'vasco', 11: 'corinthians', 12: 'cruzeiro',
-  13: 'bahia', 14: 'santos', 15: 'bragantino', 16: 'chapecoense',
-  17: 'coritiba', 18: 'vitoria', 19: 'mirassol', 20: 'remo'
-};
-
-function logoSrc(id) {
-  const arq = LOGOS[id] || 'flamengo';
-  return arq === 'gremio' ? '/times/gremio.svg' : `/times/${arq}.png`;
-}
-
-function zona(pos) {
-  if (pos === 1)        return { label: 'CAMPEAO',        bg: 'bg-yellow-500/20', border: 'border-l-4 border-yellow-400', text: 'text-yellow-400' };
-  if (pos <= 6)         return { label: 'Libertadores',   bg: 'bg-blue-500/10',   border: 'border-l-4 border-blue-500',   text: 'text-blue-400' };
-  if (pos <= 12)        return { label: 'Sul-Americana',  bg: 'bg-green-500/10',  border: 'border-l-4 border-green-500',  text: 'text-green-400' };
-  if (pos >= 17)        return { label: 'Rebaixado',      bg: 'bg-red-500/10',    border: 'border-l-4 border-red-500',    text: 'text-red-400' };
-  return { label: '', bg: '', border: 'border-l-4 border-transparent', text: '' };
-}
+import MFCShield from './MFCShield';
 
 export default function FimTemporada({ meuTimeId, onVoltar }) {
   const [tabela, setTabela] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/tabela').then(r => r.json()).then(setTabela);
-  }, []);
+  useEffect(() => { fetch('/api/tabela').then(r => r.json()).then(setTabela); }, []);
 
   const campeao = tabela[0];
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-yellow-600/30 to-gray-900 px-6 py-10 text-center">
-        <p className="text-yellow-400 text-xs tracking-widest uppercase mb-2">Brasileirao Serie A 2026</p>
-        <h1 className="text-4xl font-extrabold mb-1">Temporada Encerrada</h1>
+  function getZone(pos) {
+    if (pos === 1)  return { label: 'CAMPEÃO',       cls: 'mfc-zone-campeao', color: 'var(--c-gold)' };
+    if (pos <= 6)   return { label: 'LIBERTADORES',  cls: 'mfc-zone-liberta', color: 'var(--c-blue-hi)' };
+    if (pos <= 12)  return { label: 'SUL-AMERICANA', cls: 'mfc-zone-sulam',   color: 'var(--c-green-hi)' };
+    if (pos >= 17)  return { label: 'REBAIXADO',     cls: 'mfc-zone-rebaixa', color: 'var(--c-red-hi)' };
+    return { label: '', cls: '', color: 'var(--c-text-ghost)' };
+  }
 
-        {campeao && (
-          <div className="mt-6 flex flex-col items-center gap-3">
-            <img src={logoSrc(campeao.id)} alt={campeao.nome} className="w-20 h-20 object-contain drop-shadow-lg" />
-            <div>
-              <p className="text-yellow-400 text-xs tracking-widest uppercase">Campeao Brasileiro</p>
-              <p className="text-3xl font-extrabold">{campeao.nome}</p>
-              <p className="text-gray-400 text-sm mt-1">{campeao.pontos} pontos · {campeao.vitorias}V {campeao.empates}E {campeao.derrotas}D</p>
-            </div>
-          </div>
-        )}
+  return (
+    <div className="mfc-screen" style={{ background: 'var(--c-bg)', display: 'flex', flexDirection: 'column' }}>
+
+      <div className="mfc-section-header" style={{ padding: '12px 16px' }}>
+        <span style={{ color: 'var(--c-gold)', letterSpacing: '0.18em' }}>
+          BRASILEIRÃO SÉRIE A 2026 — TEMPORADA ENCERRADA
+        </span>
       </div>
 
-      {/* Tabela */}
-      <div className="max-w-2xl mx-auto px-4 pb-8">
-        <div className="space-y-1">
-          {tabela.map((tm) => {
-            const z = zona(tm.pos);
-            const isMe = tm.id === meuTimeId;
-            return (
-              <div
-                key={tm.id}
-                className={`flex items-center gap-3 px-3 py-3 rounded-xl ${z.bg} ${z.border} ${isMe ? 'ring-1 ring-white/30' : ''}`}
-              >
-                <span className="text-gray-500 text-sm w-5 text-right">{tm.pos}</span>
-                <img src={logoSrc(tm.id)} alt={tm.nome} className="w-7 h-7 object-contain" />
-                <span className={`flex-1 font-semibold text-sm ${isMe ? 'text-white' : 'text-gray-200'}`}>
-                  {tm.nome} {isMe && <span className="text-blue-400 text-xs ml-1">(você)</span>}
-                </span>
-                {z.label && (
-                  <span className={`text-xs font-bold ${z.text} hidden sm:block`}>{z.label}</span>
-                )}
-                <span className="font-bold text-sm w-8 text-right">{tm.pontos}</span>
-                <span className="text-gray-400 text-xs w-12 text-right">{tm.vitorias}V {tm.derrotas}D</span>
-              </div>
-            );
-          })}
+      {campeao && (
+        <div className="mfc-champion-banner">
+          <div className="mfc-xs-upper-dim" style={{ letterSpacing: '0.3em', marginBottom: '6px' }}>★ CAMPEÃO BRASILEIRO ★</div>
+          <div className="mfc-champion-name">{campeao.nome.toUpperCase()}</div>
+          <div className="mfc-xs-upper-dim" style={{ marginTop: '6px', letterSpacing: '0.1em' }}>
+            {campeao.pontos} PTS · {campeao.vitorias}V {campeao.empates}E {campeao.derrotas}D · SG {campeao.saldo >= 0 ? '+' : ''}{campeao.saldo}
+          </div>
         </div>
+      )}
 
-        {/* Legenda */}
-        <div className="flex gap-4 mt-4 text-xs text-gray-500 justify-center flex-wrap">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded-sm inline-block"/>Campeao</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-500 rounded-sm inline-block"/>Libertadores</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded-sm inline-block"/>Sul-Americana</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 rounded-sm inline-block"/>Rebaixamento</span>
+      <div className="mfc-section-header"><span>CLASSIFICAÇÃO FINAL</span></div>
+
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div style={{ overflowX: 'auto', padding: '0 12px 16px' }}>
+          <table className="mfc-table" style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th style={{ width: '32px' }}>#</th>
+                <th style={{ width: '34px' }}></th>
+                <th style={{ textAlign: 'left', minWidth: '110px' }}>CLUBE</th>
+                <th>PTS</th><th>V</th><th>E</th><th>D</th><th>SG</th>
+                <th style={{ minWidth: '80px' }}>ZONA</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tabela.map(tm => {
+                const z    = getZone(tm.pos);
+                const isMe = tm.id === meuTimeId;
+                return (
+                  <tr key={tm.id} className={z.cls}
+                    style={{ background: isMe ? 'var(--c-blue-bg)' : undefined }}>
+                    <td style={{ textAlign: 'center', color: 'var(--c-text-dim)' }}>{tm.pos}</td>
+                    <td style={{ textAlign: 'center', padding: '2px' }}>
+                      <MFCShield teamId={tm.id} sigla={tm.sigla} size={22} />
+                    </td>
+                    <td style={{ fontWeight: isMe ? 'bold' : 'normal', color: isMe ? 'var(--c-gold)' : 'var(--c-text-mid)' }}>
+                      {isMe ? '▶ ' : '  '}{tm.nome}
+                      {isMe && <span style={{ color: 'var(--c-blue-hi)', fontSize: '10px', marginLeft: '4px' }}>(você)</span>}
+                    </td>
+                    <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{tm.pontos}</td>
+                    <td style={{ textAlign: 'center', color: 'var(--c-green-hi)' }}>{tm.vitorias}</td>
+                    <td style={{ textAlign: 'center', color: 'var(--c-yellow-hi)' }}>{tm.empates}</td>
+                    <td style={{ textAlign: 'center', color: 'var(--c-red-hi)' }}>{tm.derrotas}</td>
+                    <td style={{ textAlign: 'center', color: tm.saldo >= 0 ? 'var(--c-green-hi)' : 'var(--c-red-hi)' }}>
+                      {tm.saldo > 0 ? '+' : ''}{tm.saldo}
+                    </td>
+                    <td style={{ textAlign: 'center', fontSize: '10px', color: z.color, letterSpacing: '0.04em' }}>
+                      {z.label}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div style={{ marginTop: '16px' }}>
+            <button onClick={onVoltar} className="mfc-btn"
+              style={{ width: '100%', textAlign: 'center', padding: '12px' }}>← VOLTAR AO MENU</button>
+          </div>
         </div>
-
-        <button
-          onClick={onVoltar}
-          className="w-full mt-6 bg-gray-700 hover:bg-gray-600 py-4 rounded-2xl font-bold transition-all"
-        >
-          Voltar ao Menu
-        </button>
       </div>
     </div>
   );

@@ -1,65 +1,79 @@
 import { useState, useEffect } from 'react';
-
-const LOGOS = {
-  1: 'flamengo', 2: 'atletico-mg', 3: 'palmeiras', 4: 'fluminense',
-  5: 'athletico-pr', 6: 'internacional', 7: 'sao-paulo', 8: 'gremio',
-  9: 'botafogo', 10: 'vasco', 11: 'corinthians', 12: 'cruzeiro',
-  13: 'bahia', 14: 'santos', 15: 'bragantino', 16: 'chapecoense',
-  17: 'coritiba', 18: 'vitoria', 19: 'mirassol', 20: 'remo'
-};
-
-function logoSrc(time) {
-  const arq = LOGOS[time.id] || time.sigla.toLowerCase();
-  return arq === 'gremio' ? '/times/gremio.svg' : `/times/${arq}.png`;
-}
+import MFCShield, { getTeamStyle } from './MFCShield';
 
 export default function SelecaoClube({ onVoltar, onConfirmar }) {
-  const [times, setTimes] = useState([]);
+  const [times, setTimes]     = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hovered, setHovered] = useState(null);
 
   useEffect(() => {
-    fetch('/api/times')
-      .then(r => r.json())
-      .then(data => { setTimes(data); setLoading(false); });
+    fetch('/api/times').then(r => r.json()).then(data => {
+      setTimes(data); setLoading(false);
+    });
   }, []);
 
-  return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
-      style={{ backgroundImage: "url('/estadio.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
-    >
-      <div className="absolute inset-0 bg-black opacity-70" />
-      <div className="relative z-10 w-full max-w-4xl px-6 py-10">
-        <h2 className="text-white text-4xl font-extrabold text-center mb-2">
-          Escolha seu <span className="text-blue-400">Clube</span>
-        </h2>
-        <p className="text-gray-400 text-sm text-center mb-8 tracking-widest uppercase">
-          Brasileirao Serie A 2026
-        </p>
+  const forcaColor = (f) =>
+    f >= 85 ? 'var(--c-gold)' :
+    f >= 75 ? 'var(--c-text)' : 'var(--c-text-dim)';
 
+  return (
+    <div className="mfc-screen mfc-pitch-bg" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="mfc-topbar">
+        <div>
+          <div className="mfc-topbar-title">SELECIONAR CLUBE</div>
+          <div className="mfc-topbar-sub">Brasileirao Serie A 2026 · 20 times</div>
+        </div>
+        <button className="mfc-btn mfc-btn-ghost" onClick={onVoltar}>← VOLTAR</button>
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
         {loading ? (
-          <p className="text-white text-center py-12">Carregando times...</p>
+          <div className="mfc-loading">
+            <div className="mfc-spinner">■</div>
+            <div className="mfc-loading-text">CARREGANDO TIMES...</div>
+          </div>
         ) : (
-          <div className="grid grid-cols-4 sm:grid-cols-5 gap-4 mb-8">
-            {times.map((time) => (
-              <button
-                key={time.id}
-                onClick={() => onConfirmar(time)}
-                className="flex flex-col items-center gap-2 bg-white/10 hover:bg-blue-600/40 border border-white/20 hover:border-blue-500 py-4 px-2 rounded-2xl transition-all duration-200 backdrop-blur-sm"
-              >
-                <img src={logoSrc(time)} alt={time.nome} className="w-12 h-12 object-contain" />
-                <span className="text-white text-xs font-semibold text-center leading-tight">{time.nome}</span>
-                <span className="text-blue-300 text-xs">{time.forca} ovr</span>
-              </button>
-            ))}
+          <div style={{ maxWidth: '920px', margin: '0 auto' }}>
+            <div className="mfc-team-grid">
+              {times.map(t => {
+                const ts = getTeamStyle(t.id);
+                const isHover = hovered === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    className="mfc-team-card"
+                    onClick={() => onConfirmar(t)}
+                    onMouseEnter={() => setHovered(t.id)}
+                    onMouseLeave={() => setHovered(null)}
+                    style={{ borderColor: isHover ? ts.primary : undefined }}
+                  >
+                    <div className="mfc-team-card-accent" style={{ background: ts.primary }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                      <MFCShield teamId={t.id} sigla={t.sigla} size={38} />
+                      <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
+                        <div style={{ fontSize: '13px', color: 'var(--c-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {t.nome}
+                        </div>
+                        <div style={{ fontSize: '10px', color: 'var(--c-text-dim)', letterSpacing: '0.1em' }}>
+                          {t.sigla} · {t.formacao}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontFamily: 'var(--font-vt)', fontSize: '22px', color: forcaColor(t.forca), lineHeight: 1 }}>
+                        {t.forca}
+                      </div>
+                      <div style={{ fontSize: '9px', color: 'var(--c-text-dim)', letterSpacing: '0.1em' }}>OVR</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <div style={{ marginTop: '14px', textAlign: 'center', fontSize: '11px', color: 'var(--c-text-ghost)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              CLIQUE NUM CLUBE PARA INICIAR
+            </div>
           </div>
         )}
-
-        <div className="flex justify-center">
-          <button onClick={onVoltar} className="text-gray-400 hover:text-white text-sm transition-all underline underline-offset-4">
-            ← Voltar ao menu
-          </button>
-        </div>
       </div>
     </div>
   );
