@@ -1,9 +1,13 @@
 #pragma once
 #include <functional>
 
+// Classe template para implementar uma Árvore genérica
+// Template, logo pode ser usada para qualquer tipo de dado
+
 template <typename T>
 class AVL {
 private:
+    // Classe interna que representa um nó da árvore
     class Node {
     public:
         T data;
@@ -18,14 +22,17 @@ private:
     int sz;
     std::function<int(const T&, const T&)> cmp;
 
+    // Altura de um nó
     int height(Node* n) const {
         return n ? n->height : 0;
     }
 
+    // Calcula a diferença de altura entre a sub-árvore esquerda e direita
     int balanceFactor(Node* n) const {
         return n ? height(n->left) - height(n->right) : 0;
     }
 
+    // Atualiza a altura do nó com base nas alturas dos seus dois filhos
     void updateHeight(Node* n) {
         if (!n) return;
         int lh = height(n->left);
@@ -33,6 +40,7 @@ private:
         n->height = 1 + (lh > rh ? lh : rh);
     }
 
+    // Rotação para direita
     Node* rotateRight(Node* y) {
         Node* x  = y->left;
         Node* T2 = x->right;
@@ -43,6 +51,7 @@ private:
         return x;
     }
 
+    // Rotação para esquerda
     Node* rotateLeft(Node* x) {
         Node* y  = x->right;
         Node* T2 = y->left;
@@ -53,6 +62,7 @@ private:
         return y;
     }
 
+    // Balanceamento do nó se ele tiver desbalanceado
     Node* balance(Node* n) {
         updateHeight(n);
         int bf = balanceFactor(n);
@@ -71,6 +81,7 @@ private:
         return n;
     }
 
+    // Insere um novo nó na árvore (usa da recursão para encontrar a posição correta)
     Node* insert(Node* n, const T& val) {
         if (!n) { sz++; return new Node(val); }
         int c = cmp(val, n->data);
@@ -80,10 +91,12 @@ private:
         return balance(n);
     }
 
+    // Encontra o nó com o menor valor a partir de um nó dado
     Node* minNode(Node* n) {
         return n->left ? minNode(n->left) : n;
     }
 
+    // Remove um nó da árvore e rebalanceia, se necessário
     Node* remove(Node* n, const T& val) {
         if (!n) return nullptr;
         int c = cmp(val, n->data);
@@ -103,6 +116,7 @@ private:
         return balance(n);
     }
 
+    // Percurso in-order (direita, centro, esquerda)
     void inorderDesc(Node* n, std::function<void(const T&)> visit) const {
         if (!n) return;
         inorderDesc(n->right, visit);
@@ -110,6 +124,7 @@ private:
         inorderDesc(n->left, visit);
     }
 
+    // Destrói a árvore para liberar memória
     void destroy(Node* n) {
         if (!n) return;
         destroy(n->left);

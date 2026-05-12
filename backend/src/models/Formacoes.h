@@ -26,7 +26,9 @@ namespace Formacoes {
     /* 5-2-3     */ {  0,    10,     0,     8,   -11,   -10,     9,     8,     9,     0 }
     };
 
+    // Retorna o índice da formação
     int indice(const std::string& formacao);
+    // Retorna o bonus percentual da vantagem tática
     int getModificador(const std::string& atacante, const std::string& defensor);
 
 }

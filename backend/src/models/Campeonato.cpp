@@ -23,12 +23,14 @@ Time times[NUM_TIMES] = {
     Time(20, "Remo", "REM", 70, 40.0f, "4-4-2")
 };
 
+// Busca o time pelo ID
 Time* buscarTimePorId(int id) {
     for (int i = 0; i < NUM_TIMES; i++)
         if (times[i].getId() == id) return &times[i];
     return nullptr;
 }
 
+// Busca o time pelo nome
 Time* buscarTimePorNome(const std::string& nome) {
     for (int i = 0; i < NUM_TIMES; i++)
         if (times[i].getNome() == nome) return &times[i];

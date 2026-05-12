@@ -5,17 +5,7 @@
 
 const int PARTIDAS_POR_RODADA = 10;
 
-// =============================================================================
-// Partida.h  —  Representa uma partida entre dois times
-//
-// NOVIDADE: LinkedList<Evento*> log
-//   Durante a simulação, cada gol/cartão/intervalo vira um objeto Evento
-//   e é inserido nessa lista. O main.cpp pode depois exibir o log completo.
-//
-// GERENCIAMENTO DE MEMÓRIA:
-//   O destrutor percorre o log e deleta cada Evento* (alocado com 'new'
-//   em Simulacao.cpp). A LinkedList só deleta os nós — nós deletamos os dados.
-// =============================================================================
+// A classe Partida representa um jogo entre dois times, com seus gols e eventos ocorridos e armazena os eventos da partida na Linked List
 
 class Partida {
 private:
@@ -23,23 +13,25 @@ private:
     Time* timeVisitante;
     int   golsCasa;
     int   golsVisitante;
+    // Status da partida
     bool  simulada;
 
     LinkedList<Evento*> log; // todos os eventos ocorridos na partida
 
 public:
+    // Construtor
     Partida(Time* casa, Time* visitante)
         : timeCasa(casa), timeVisitante(visitante),
           golsCasa(0), golsVisitante(0), simulada(false) {}
 
-    // Destrutor: deleta cada objeto Evento antes de a lista liberar seus nós
+    // Destrutor
     ~Partida() {
         log.forEach([](Evento* const& e) {
             delete e;
         });
     }
 
-    // --- Getters ---
+    // Getters
     Time* getTimeCasa()                    const { return timeCasa; }
     Time* getTimeVisitante()               const { return timeVisitante; }
     int   getGolsCasa()                    const { return golsCasa; }
@@ -47,7 +39,7 @@ public:
     bool  isSimulada()                     const { return simulada; }
     const LinkedList<Evento*>& getLog()    const { return log; }
 
-    // --- Setters ---
+    // Setters
     void setGolsCasa(int g)      { golsCasa = g; }
     void setGolsVisitante(int g) { golsVisitante = g; }
     void setSimulada(bool s)     { simulada = s; }
@@ -65,10 +57,12 @@ private:
 public:
     Rodada(int num) : numero(num), numPartidas(0) {}
 
+    // Getters
     int      getNumero()       const { return numero; }
     int      getNumPartidas()  const { return numPartidas; }
     Partida* getPartida(int i) const { return partidas[i]; }
 
+    // Adiciona uma partida à rodada
     void addPartida(Partida* p) {
         if (numPartidas < PARTIDAS_POR_RODADA)
             partidas[numPartidas++] = p;

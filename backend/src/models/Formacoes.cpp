@@ -1,5 +1,6 @@
 #include "Formacoes.h"
 
+// Aplicação da vantagem tática entre as formações
 namespace Formacoes {
 
     int indice(const std::string& formacao) {

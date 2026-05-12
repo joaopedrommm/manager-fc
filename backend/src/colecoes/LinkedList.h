@@ -2,9 +2,13 @@
 #include <stdexcept>
 #include <functional>
 
+// Classe template que implementa uma Lista Ligada genérica
+// Template, logo pode armazenar qualquer tipo de dado
+
 template <typename T>
 class LinkedList {
 private:
+    // Classe interna que representa cada nó
     class Node {
     public:
         T     data;
@@ -13,13 +17,15 @@ private:
         Node(const T& val) : data(val), next(nullptr) {}
     };
 
-    Node* head;
-    Node* tail;
-    int   sz;
+    Node* head; // Ponteiro para o primeiro nó
+    Node* tail; // Ponteiro para o último nó
+    int   sz; // Tamanho da lista
 
 public:
+    // Construtor
     LinkedList() : head(nullptr), tail(nullptr), sz(0) {}
 
+    // Destrutor
     ~LinkedList() {
         Node* atual = head;
         while (atual) {
@@ -29,6 +35,7 @@ public:
         }
     }
 
+    // Adiciona um elemento no fim da lista
     void pushBack(const T& val) {
         Node* novo = new Node(val);
         if (tail) tail->next = novo;
@@ -37,6 +44,7 @@ public:
         sz++;
     }
 
+    // Adiciona um elemento no início da lista
     void pushFront(const T& val) {
         Node* novo = new Node(val);
         novo->next = head;
@@ -45,6 +53,7 @@ public:
         sz++;
     }
 
+    // Acessa o elemento da posição i
     const T& get(int i) const {
         if (i < 0 || i >= sz) throw std::out_of_range("Indice fora do intervalo");
         Node* atual = head;
@@ -52,6 +61,7 @@ public:
         return atual->data;
     }
 
+    // Lê os elementos de forma consecutiva
     void forEach(std::function<void(const T&)> func) const {
         Node* atual = head;
         while (atual) {
@@ -60,6 +70,8 @@ public:
         }
     }
 
+    // Checa se a lista é vazia
     bool empty() const { return sz == 0; }
+    // Retorna o tamanho da lista
     int  size()  const { return sz; }
 };

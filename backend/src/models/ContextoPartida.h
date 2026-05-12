@@ -4,6 +4,8 @@
 #include "Formacoes.h"
 #include <cstdlib>
 
+// Essa classe serve para calcular as probabilidades de eventos acontecerem
+// Quando acontecem, ela armazena o estado, por exemplo: jogadores expulsos 
 class ContextoPartida {
 private:
     Time* timeCasa;
@@ -17,6 +19,7 @@ private:
 
     bool isCasa(Time* t) const { return t == timeCasa; }
 
+    // Calcula a força efetiva dos jogadores ativos do time, considerando expulsões
     float calcularForcaAtivos(Time* time) const {
         // const bool* — correto porque o método é const
         const bool* expulsos = isCasa(time) ? expulsosCasa : expulsosVisit;
@@ -24,16 +27,19 @@ private:
         float total = 0.0f;
         int   count = 0;
 
+        // Calcula a contribuição individual dos jogadores ativos e soma
         for (int i = 0; i < time->getNumJogadores(); i++) {
             if (!expulsos[i]) {
                 total += time->getJogador(i)->calcularContribuicao((float)time->getForca());
                 count++;
             }
         }
+        // Retorna a média de força dos jogadores ativos.
         return (count > 0) ? (total / count) : (float)time->getForca() * 0.3f;
     }
 
 public:
+    // Construtor
     ContextoPartida(Time* casa, Time* visitante)
         : timeCasa(casa), timeVisitante(visitante),
           numAtivosCasa(TAM_ELENCO), numAtivosVisit(TAM_ELENCO) {
@@ -43,6 +49,7 @@ public:
         }
     }
 
+    // Retorna um jogador aleatório
     Jogador* getJogadorAleatorio(Time* time) {
         bool* expulsos = isCasa(time) ? expulsosCasa : expulsosVisit;
         int   num      = time->getNumJogadores();
@@ -57,6 +64,7 @@ public:
         return const_cast<Jogador*>(time->getJogador(idx));
     }
 
+    // Torna um jogador como não ativo
     void expulsarJogador(Time* time, Jogador* jogador) {
         bool* expulsos = isCasa(time) ? expulsosCasa : expulsosVisit;
         int&  ativos   = isCasa(time) ? numAtivosCasa : numAtivosVisit;
@@ -70,11 +78,13 @@ public:
         }
     }
 
+    // Calcula a probabilidade de gol
     float calcularProbGol(Time* atacante, Time* defensor) const {
         float fa = calcularForcaAtivos(atacante);
         float fd = calcularForcaAtivos(defensor);
         if (fd < 1.0f) fd = 1.0f;
 
+        // Define a vantagem pela tática
         int mod = Formacoes::getModificador(atacante->getFormacao(),
                                             defensor->getFormacao());
         fa *= (1.0f + mod / 100.0f);
@@ -87,6 +97,7 @@ public:
         return prob;
     }
 
+    // Getters para o número de jogadores ativos
     int getNumAtivosCasa()  const { return numAtivosCasa; }
     int getNumAtivosVisit() const { return numAtivosVisit; }
 };
