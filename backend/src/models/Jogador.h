@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include <string>
+using namespace std;
 
 // Classe abstrata para a entidade jogador, com os atributos e métodos comuns a todas as posições
 
@@ -12,14 +13,14 @@ enum class Agressividade {
 class Jogador {
 private:
     int           id;
-    std::string   nome;
-    std::string   posicao;
+    string   nome;
+    string   posicao;
     int           habilidade;
     Agressividade agressividade;
 
 public:
     // Construtor
-    Jogador(int id, const std::string& nome, const std::string& posicao,
+    Jogador(int id, const string& nome, const string& posicao,
             int habilidade, Agressividade agressividade)
         : id(id), nome(nome), posicao(posicao),
           habilidade(habilidade), agressividade(agressividade) {}
@@ -29,7 +30,7 @@ public:
 
     // Método virtual para calcular a contribuição do jogador
     virtual float       calcularContribuicao(float forcaBase) const = 0;
-    virtual std::string getTipo() const { return "Jogador"; }
+    virtual string getTipo() const { return "Jogador"; }
 
     // Retorna a probabilidade de receber um cartão vermelho de acordo com a agressividade
     float getProbExpulsao() const {
@@ -53,8 +54,8 @@ public:
 
     // Getters
     int                   getId()            const { return id; }
-    const std::string&    getNome()          const { return nome; }
-    const std::string&    getPosicao()       const { return posicao; }
+    const string&    getNome()          const { return nome; }
+    const string&    getPosicao()       const { return posicao; }
     int                   getHabilidade()    const { return habilidade; }
     Agressividade         getAgressividade() const { return agressividade; }
 

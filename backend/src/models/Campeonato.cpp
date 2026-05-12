@@ -1,4 +1,5 @@
-#include "Campeonato.h"
+﻿#include "Campeonato.h"
+using namespace std;
 
 Time times[NUM_TIMES] = {
     Time( 1, "Flamengo", "FLA", 82, 180.0f, "4-2-3-1"),
@@ -31,7 +32,7 @@ Time* buscarTimePorId(int id) {
 }
 
 // Busca o time pelo nome
-Time* buscarTimePorNome(const std::string& nome) {
+Time* buscarTimePorNome(const string& nome) {
     for (int i = 0; i < NUM_TIMES; i++)
         if (times[i].getNome() == nome) return &times[i];
     return nullptr;

@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // server.cpp — Manager FC HTTP API
 // =============================================================================
 
@@ -32,6 +32,7 @@
 #include "colecoes/LinkedList.h"
 #include "colecoes/Queue.h"
 #include "data/elencos.h"
+using namespace std;
 
 // ---------------------------------------------------------------------------
 // Mesmas funcoes auxiliares do main.cpp
@@ -83,7 +84,7 @@ class ResPartida {
 public:
     int rodada;
     int casaId, visitId;
-    std::string timeCasa, timeVisit;
+    string timeCasa, timeVisit;
     int golsCasa, golsVisit;
 };
 
@@ -99,7 +100,7 @@ public:
     Simulacao*      sim         = nullptr;
     LinkedList<ResPartida>* historico = nullptr;
     int             rodadaAtual = 0;
-    std::vector<FixtureInfo> fixtures;
+    vector<FixtureInfo> fixtures;
 
     void reset() {
         // Drena e libera o calendario restante
@@ -120,7 +121,11 @@ public:
         meuTimeId   = -1;
         rodadaAtual = 0;
         fixtures.clear();
-        for (int i = 0; i < NUM_TIMES; i++) times[i].resetStats();
+        for (int i = 0; i < NUM_TIMES; i++) {
+            times[i].resetStats();
+            times[i].limparElenco();
+            preencherElencoReal(times[i]);
+        }
     }
 } jogo;
 
@@ -133,8 +138,8 @@ static void cors(httplib::Response& res) {
     res.set_header("Access-Control-Allow-Headers", "Content-Type");
 }
 
-static std::string esc(const std::string& s) {
-    std::string r;
+static string esc(const string& s) {
+    string r;
     for (char c : s) {
         if      (c == '"')  r += "\\\"";
         else if (c == '\\') r += "\\\\";
@@ -143,16 +148,16 @@ static std::string esc(const std::string& s) {
     return r;
 }
 
-static std::string q(const std::string& s) { return "\"" + esc(s) + "\""; }
+static string q(const string& s) { return "\"" + esc(s) + "\""; }
 
-static std::string jsonTime(const Time& t) {
-    std::ostringstream o;
-    o << std::fixed << std::setprecision(1);
+static string jsonTime(const Time& t) {
+    ostringstream o;
+    o << fixed << setprecision(1);
     o << "{"
       << "\"id\":"         << t.getId()          << ","
       << "\"nome\":"       << q(t.getNome())      << ","
       << "\"sigla\":"      << q(t.getSigla())     << ","
-      << "\"forca\":"      << t.getForca()        << ","
+      << "\"forca\":"      << (int)t.calcularForcaElenco() << ","
       << "\"orcamento\":"  << t.getOrcamento()    << ","
       << "\"formacao\":"   << q(t.getFormacao())  << ","
       << "\"pontos\":"     << t.getPontos()       << ","
@@ -166,22 +171,22 @@ static std::string jsonTime(const Time& t) {
     return o.str();
 }
 
-static int parseIntKey(const std::string& body, const std::string& key) {
+static int parseIntKey(const string& body, const string& key) {
     auto pos = body.find("\"" + key + "\"");
-    if (pos == std::string::npos) return -1;
+    if (pos == string::npos) return -1;
     pos = body.find(':', pos);
-    if (pos == std::string::npos) return -1;
+    if (pos == string::npos) return -1;
     while (++pos < body.size() && (body[pos] == ' ' || body[pos] == '\t'));
-    try { return std::stoi(body.substr(pos)); } catch (...) { return -1; }
+    try { return stoi(body.substr(pos)); } catch (...) { return -1; }
 }
 
-static std::string parseStrKey(const std::string& body, const std::string& key) {
+static string parseStrKey(const string& body, const string& key) {
     auto pos = body.find("\"" + key + "\"");
-    if (pos == std::string::npos) return "";
+    if (pos == string::npos) return "";
     pos = body.find('"', body.find(':', pos) + 1);
-    if (pos == std::string::npos) return "";
+    if (pos == string::npos) return "";
     auto end = body.find('"', pos + 1);
-    if (end == std::string::npos) return "";
+    if (end == string::npos) return "";
     return body.substr(pos + 1, end - pos - 1);
 }
 
@@ -191,7 +196,7 @@ static Queue<Rodada*>* alocarCalendario() {
     Queue<Rodada*>  tmp = gerarCalendario();
     Queue<Rodada*>* cal = new Queue<Rodada*>();
     jogo.fixtures.clear();
-    std::vector<Rodada*> buf;
+    vector<Rodada*> buf;
     while (!tmp.empty()) {
         Rodada* r = tmp.dequeue();
         for (int i = 0; i < r->getNumPartidas(); i++) {
@@ -212,16 +217,16 @@ static Queue<Rodada*>* alocarCalendario() {
 // main — registra rotas e sobe o servidor
 // ---------------------------------------------------------------------------
 static void reseedRand() {
-    auto ns = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    auto ns = chrono::high_resolution_clock::now().time_since_epoch().count();
     srand((unsigned)(ns ^ (ns >> 32)));
 }
 
 int main() {
     reseedRand();
 
-    std::cout << "Inicializando elencos..." << std::endl;
+    cout << "Inicializando elencos..." << endl;
     for (int i = 0; i < NUM_TIMES; i++) preencherElencoReal(times[i]);
-    std::cout << "Pronto. Iniciando servidor na porta 8080..." << std::endl;
+    cout << "Pronto. Iniciando servidor na porta 8080..." << endl;
 
     httplib::Server svr;
 
@@ -235,7 +240,7 @@ int main() {
     // -----------------------------------------------------------------------
     svr.Get("/api/times", [](const httplib::Request&, httplib::Response& res) {
         cors(res);
-        std::string json = "[";
+        string json = "[";
         for (int i = 0; i < NUM_TIMES; i++) {
             if (i > 0) json += ",";
             json += jsonTime(times[i]);
@@ -266,7 +271,7 @@ int main() {
         jogo.rodadaAtual = 0;
         for (int i = 0; i < NUM_TIMES; i++) jogo.tabela->insert(&times[i]);
 
-        std::string json = "{\"ok\":true,\"time\":" + jsonTime(times[id - 1]) + "}";
+        string json = "{\"ok\":true,\"time\":" + jsonTime(times[id - 1]) + "}";
         res.set_content(json, "application/json");
     });
 
@@ -279,7 +284,7 @@ int main() {
             res.set_content("{\"iniciado\":false}", "application/json");
             return;
         }
-        std::ostringstream o;
+        ostringstream o;
         o << "{"
           << "\"iniciado\":true,"
           << "\"rodadaAtual\":"  << jogo.rodadaAtual << ","
@@ -297,15 +302,15 @@ int main() {
         cors(res);
         if (!jogo.iniciado) { res.set_content("[]", "application/json"); return; }
 
-        std::string json = "[";
+        string json = "[";
         bool first = true;
         int pos = 1;
         jogo.tabela->forEach([&](Time* const& t) {
             if (!first) json += ",";
             first = false;
-            std::string base = jsonTime(*t);
+            string base = jsonTime(*t);
             // insere "pos" como primeiro campo: {"pos":1,"id":...}
-            json += "{\"pos\":" + std::to_string(pos++) + "," + base.substr(1);
+            json += "{\"pos\":" + to_string(pos++) + "," + base.substr(1);
         });
         json += "]";
         res.set_content(json, "application/json");
@@ -321,11 +326,11 @@ int main() {
             return;
         }
         const Time& t = times[jogo.meuTimeId - 1];
-        std::string json = "[";
+        string json = "[";
         for (int i = 0; i < t.getNumJogadores(); i++) {
             if (i > 0) json += ",";
             const Jogador* j = t.getJogador(i);
-            std::ostringstream o;
+            ostringstream o;
             o << "{"
               << "\"numero\":"    << (i + 1)           << ","
               << "\"nome\":"      << q(j->getNome())    << ","
@@ -369,7 +374,7 @@ int main() {
         }
 
         // Simula todas as partidas
-        std::string outrasJson = "[";
+        string outrasJson = "[";
         bool firstOutra = true;
 
         for (int i = 0; i < r->getNumPartidas(); i++) {
@@ -393,7 +398,7 @@ int main() {
             if (p != minhaPartida) {
                 if (!firstOutra) outrasJson += ",";
                 firstOutra = false;
-                std::ostringstream o;
+                ostringstream o;
                 o << "{"
                   << "\"casaId\":"    << p->getTimeCasa()->getId()           << ","
                   << "\"visitId\":"   << p->getTimeVisitante()->getId()      << ","
@@ -410,16 +415,16 @@ int main() {
         outrasJson += "]";
 
         // Serializa minha partida + eventos
-        std::string minhaJson = "null";
+        string minhaJson = "null";
         if (minhaPartida) {
-            std::string eventosJson = "[";
+            string eventosJson = "[";
             bool firstEvt = true;
             minhaPartida->getLog().forEach([&](Evento* const& e) {
                 if (!firstEvt) eventosJson += ",";
                 firstEvt = false;
-                std::string tnome  = e->getTime() ? e->getTime()->getNome()  : "";
-                std::string tsigla = e->getTime() ? e->getTime()->getSigla() : "";
-                std::ostringstream o;
+                string tnome  = e->getTime() ? e->getTime()->getNome()  : "";
+                string tsigla = e->getTime() ? e->getTime()->getSigla() : "";
+                ostringstream o;
                 o << "{"
                   << "\"minuto\":"    << e->getMinuto()        << ","
                   << "\"tipo\":"      << q(e->getTipo())       << ","
@@ -431,7 +436,7 @@ int main() {
             });
             eventosJson += "]";
 
-            std::ostringstream o;
+            ostringstream o;
             o << "{"
               << "\"casaId\":"     << minhaPartida->getTimeCasa()->getId()            << ","
               << "\"visitId\":"    << minhaPartida->getTimeVisitante()->getId()       << ","
@@ -450,7 +455,7 @@ int main() {
         for (int i = 0; i < r->getNumPartidas(); i++) delete r->getPartida(i);
         delete r;
 
-        std::ostringstream resp;
+        ostringstream resp;
         resp << "{"
              << "\"rodada\":"         << jogo.rodadaAtual                              << ","
              << "\"encerrado\":"      << (jogo.calendario->empty() ? "true" : "false") << ","
@@ -466,7 +471,7 @@ int main() {
     svr.Post("/api/formacao", [](const httplib::Request& req, httplib::Response& res) {
         cors(res);
         if (!jogo.iniciado) { res.status = 400; res.set_content("{\"erro\":\"jogo nao iniciado\"}", "application/json"); return; }
-        std::string f = parseStrKey(req.body, "formacao");
+        string f = parseStrKey(req.body, "formacao");
         if (f.empty()) { res.status = 400; res.set_content("{\"erro\":\"formacao invalida\"}", "application/json"); return; }
         times[jogo.meuTimeId - 1].setFormacao(f);
         res.set_content("{\"ok\":true,\"formacao\":" + q(f) + "}", "application/json");
@@ -487,10 +492,12 @@ int main() {
             return;
         }
         t.setForca(t.getForca() + qtd);
+        if (t.getNumJogadores() > 0)
+            t.melhorarJogadores(qtd);
         t.setOrcamento(t.getOrcamento() - total);
-        std::ostringstream o;
-        o << std::fixed << std::setprecision(1);
-        o << "{\"ok\":true,\"forca\":" << t.getForca() << ",\"orcamento\":" << t.getOrcamento() << "}";
+        ostringstream o;
+        o << fixed << setprecision(1);
+        o << "{\"ok\":true,\"forca\":" << (int)t.calcularForcaElenco() << ",\"orcamento\":" << t.getOrcamento() << "}";
         res.set_content(o.str(), "application/json");
     });
 
@@ -506,33 +513,33 @@ int main() {
 
         // Monta mapa de resultados: (casaId, visitId, rodada) -> gols
         struct Res { int gc, gv; };
-        std::map<std::tuple<int,int,int>, Res> resultMap;
+        map<tuple<int,int,int>, Res> resultMap;
         jogo.historico->forEach([&](const ResPartida& rp) {
             resultMap[{rp.casaId, rp.visitId, rp.rodada}] = {rp.golsCasa, rp.golsVisit};
         });
 
         // Agrupa fixtures por rodada
-        std::map<int, std::vector<const FixtureInfo*>> byRodada;
+        map<int, vector<const FixtureInfo*>> byRodada;
         for (const auto& fi : jogo.fixtures)
             byRodada[fi.rodada].push_back(&fi);
 
-        std::string json = "{\"calendario\":[";
+        string json = "{\"calendario\":[";
         bool firstR = true;
         for (auto& kv : byRodada) {
             if (!firstR) json += ",";
             firstR = false;
             int rodada = kv.first;
-            json += "{\"rodada\":" + std::to_string(rodada) + ",\"jogos\":[";
+            json += "{\"rodada\":" + to_string(rodada) + ",\"jogos\":[";
             bool firstJ = true;
             for (const FixtureInfo* fi : kv.second) {
                 if (!firstJ) json += ",";
                 firstJ = false;
                 const Time& tc = times[fi->casaId  - 1];
                 const Time& tv = times[fi->visitId - 1];
-                auto key = std::make_tuple(fi->casaId, fi->visitId, fi->rodada);
+                auto key = make_tuple(fi->casaId, fi->visitId, fi->rodada);
                 bool jogado = resultMap.count(key) > 0;
                 bool meu    = (fi->casaId == jogo.meuTimeId || fi->visitId == jogo.meuTimeId);
-                std::ostringstream o;
+                ostringstream o;
                 o << "{"
                   << "\"rodada\":"     << fi->rodada           << ","
                   << "\"casaId\":"     << fi->casaId           << ","
@@ -565,14 +572,14 @@ int main() {
     svr.Get("/api/historico", [](const httplib::Request&, httplib::Response& res) {
         cors(res);
         if (!jogo.iniciado) { res.set_content("[]", "application/json"); return; }
-        const std::string& nomeTime = times[jogo.meuTimeId - 1].getNome();
-        std::string json = "[";
+        const string& nomeTime = times[jogo.meuTimeId - 1].getNome();
+        string json = "[";
         bool first = true;
         jogo.historico->forEach([&](const ResPartida& rp) {
             if (rp.timeCasa != nomeTime && rp.timeVisit != nomeTime) return;
             if (!first) json += ",";
             first = false;
-            std::ostringstream o;
+            ostringstream o;
             o << "{"
               << "\"rodada\":"    << rp.rodada       << ","
               << "\"timeCasa\":"  << q(rp.timeCasa)  << ","
@@ -586,8 +593,8 @@ int main() {
         res.set_content(json, "application/json");
     });
 
-    std::cout << "Servidor rodando em http://localhost:8080" << std::endl;
-    std::cout << "Abra o frontend com: cd frontend && npm run dev" << std::endl;
+    cout << "Servidor rodando em http://localhost:8080" << endl;
+    cout << "Abra o frontend com: cd frontend && npm run dev" << endl;
     svr.listen("0.0.0.0", 8080);
     return 0;
 }

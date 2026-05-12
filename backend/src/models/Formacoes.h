@@ -1,11 +1,12 @@
-#pragma once
+﻿#pragma once
 #include <string>
+using namespace std;
 
 namespace Formacoes {
 
     const int NUM_FORMACOES = 10;
 
-    const std::string NOMES[NUM_FORMACOES] = {
+    const string NOMES[NUM_FORMACOES] = {
         "3-4-3", "3-5-2", "4-3-3", "4-2-3-1", "4-4-2",
         "4-2-4", "4-1-2-1-2", "5-4-1", "5-3-2", "5-2-3"
     };
@@ -27,8 +28,8 @@ namespace Formacoes {
     };
 
     // Retorna o índice da formação
-    int indice(const std::string& formacao);
+    int indice(const string& formacao);
     // Retorna o bonus percentual da vantagem tática
-    int getModificador(const std::string& atacante, const std::string& defensor);
+    int getModificador(const string& atacante, const string& defensor);
 
 }

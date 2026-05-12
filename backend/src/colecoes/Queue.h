@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include <stdexcept>
+using namespace std;
 
 // Classe template que implementa uma Fila genérica
 // Template, logo pode armazenar qualquer tipo de dado
@@ -34,7 +35,7 @@ public:
     }
     // Remove um elemento e retorna o primeiro elemento
     T dequeue() {
-        if (empty()) throw std::runtime_error("Queue vazia");
+        if (empty()) throw runtime_error("Queue vazia");
         T val = head->data;
         Node* temp = head;
         head = head->next;
@@ -45,7 +46,7 @@ public:
     }
     // Retorna o primeiro elemento
     T& front() {
-        if (empty()) throw std::runtime_error("Queue vazia");
+        if (empty()) throw runtime_error("Queue vazia");
         return head->data;
     }
     // Checa se a fila é vazia

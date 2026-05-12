@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "Time.h"
+using namespace std;
 
 const int NUM_TIMES = 20;
 
@@ -10,4 +11,4 @@ extern Time times[NUM_TIMES];
 Time* buscarTimePorId(int id);
 
 // Retorna ponteiro para o time pelo nome
-Time* buscarTimePorNome(const std::string& nome);
+Time* buscarTimePorNome(const string& nome);

@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 #include <stdexcept>
 #include <functional>
+using namespace std;
 
 // Classe template que implementa uma Lista Ligada genérica
 // Template, logo pode armazenar qualquer tipo de dado
@@ -55,14 +56,14 @@ public:
 
     // Acessa o elemento da posição i
     const T& get(int i) const {
-        if (i < 0 || i >= sz) throw std::out_of_range("Indice fora do intervalo");
+        if (i < 0 || i >= sz) throw out_of_range("Indice fora do intervalo");
         Node* atual = head;
         for (int j = 0; j < i; j++) atual = atual->next;
         return atual->data;
     }
 
     // Lê os elementos de forma consecutiva
-    void forEach(std::function<void(const T&)> func) const {
+    void forEach(function<void(const T&)> func) const {
         Node* atual = head;
         while (atual) {
             func(atual->data);

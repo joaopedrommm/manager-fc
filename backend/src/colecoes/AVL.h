@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include <functional>
+using namespace std;
 
 // Classe template para implementar uma Árvore genérica
 // Template, logo pode ser usada para qualquer tipo de dado
@@ -20,7 +21,7 @@ private:
 
     Node* root;
     int sz;
-    std::function<int(const T&, const T&)> cmp;
+    function<int(const T&, const T&)> cmp;
 
     // Altura de um nó
     int height(Node* n) const {
@@ -117,7 +118,7 @@ private:
     }
 
     // Percurso in-order (direita, centro, esquerda)
-    void inorderDesc(Node* n, std::function<void(const T&)> visit) const {
+    void inorderDesc(Node* n, function<void(const T&)> visit) const {
         if (!n) return;
         inorderDesc(n->right, visit);
         visit(n->data);
@@ -133,7 +134,7 @@ private:
     }
 
 public:
-    AVL(std::function<int(const T&, const T&)> comparador)
+    AVL(function<int(const T&, const T&)> comparador)
         : root(nullptr), sz(0), cmp(comparador) {}
 
     ~AVL() { destroy(root); }
@@ -143,7 +144,7 @@ public:
     int  size()  const          { return sz; }
     bool empty() const          { return sz == 0; }
 
-    void forEach(std::function<void(const T&)> visit) const {
+    void forEach(function<void(const T&)> visit) const {
         inorderDesc(root, visit);
     }
 };
