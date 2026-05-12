@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import MenuPrincipal from './components/MenuPrincipal';
 import SelecaoClube from './components/SelecaoClube';
-import Creditos from './components/Creditos';
 import Dashboard from './components/Dashboard';
 import Simulacao from './components/Simulação';
 import PosJogo from './components/Pos-jogo';
@@ -10,7 +9,7 @@ import FimTemporada from './components/FimTemporada';
 export default function App() {
   const [tela, setTela] = useState('menu');
   const [clubeSelecionado, setClubeSelecionado] = useState(null);
-  const [resultadoRodada, setResultadoRodada] = useState(null);
+  const [resultadoRodada, setResultadoRodada]   = useState(null);
 
   const handleConfirmarClube = async (time) => {
     await fetch('/api/iniciar', {
@@ -24,21 +23,8 @@ export default function App() {
 
   return (
     <>
-      {tela === 'menu' && (
-        <MenuPrincipal
-          onNovoJogo={() => setTela('selecao')}
-          onCreditos={() => setTela('creditos')}
-        />
-      )}
-      {tela === 'creditos' && (
-        <Creditos onVoltar={() => setTela('menu')} />
-      )}
-      {tela === 'selecao' && (
-        <SelecaoClube
-          onVoltar={() => setTela('menu')}
-          onConfirmar={handleConfirmarClube}
-        />
-      )}
+      {tela === 'menu'      && <MenuPrincipal onNovoJogo={() => setTela('selecao')} />}
+      {tela === 'selecao'   && <SelecaoClube onVoltar={() => setTela('menu')} onConfirmar={handleConfirmarClube} />}
       {tela === 'dashboard' && (
         <Dashboard
           clube={clubeSelecionado}
@@ -48,25 +34,13 @@ export default function App() {
         />
       )}
       {tela === 'simulacao' && (
-        <Simulacao
-          onAvancar={(resultado) => {
-            setResultadoRodada(resultado);
-            setTela('pos-jogo');
-          }}
-        />
+        <Simulacao onAvancar={(r) => { setResultadoRodada(r); setTela('pos-jogo'); }} />
       )}
-      {tela === 'pos-jogo' && (
-        <PosJogo
-          resultado={resultadoRodada}
-          onAvancar={() => setTela('dashboard')}
-        />
-      )}
+      {tela === 'pos-jogo'      && <PosJogo resultado={resultadoRodada} onAvancar={() => setTela('dashboard')} />}
       {tela === 'fim-temporada' && (
-        <FimTemporada
-          meuTimeId={clubeSelecionado?.id}
-          onVoltar={() => { setClubeSelecionado(null); setTela('menu'); }}
-        />
+        <FimTemporada meuTimeId={clubeSelecionado?.id} onVoltar={() => { setClubeSelecionado(null); setTela('menu'); }} />
       )}
+
     </>
   );
 }
