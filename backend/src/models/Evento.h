@@ -7,7 +7,7 @@
 class Time;
 
 class Evento {
-protected:
+private:
     int   minuto;
     Time* time;
 public:
