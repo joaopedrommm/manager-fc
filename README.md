@@ -282,4 +282,4 @@ Abra `http://localhost:5173` no navegador.
 
 ## Equipe
 
-Desenvolvido por estudantes do 2º período de Ciência da Computação — CIn/UFPE, 2026.
+Desenvolvido por Davi Mello, João Pedro Medeiros, João Luiz Siqueira e Vitor Nunes do 2º período de Sistemas da Informação — CIn/UFPE, 2026.
