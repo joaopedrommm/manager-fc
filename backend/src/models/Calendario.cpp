@@ -1,6 +1,7 @@
-#include "Calendario.h"
+﻿#include "Calendario.h"
 #include <iostream>
 #include <iomanip>
+using namespace std;
 // Função principal que gera todas as rodadas do campeonato em ordem
 Queue<Rodada*> gerarCalendario() {
     Queue<Rodada*> fila;
@@ -43,13 +44,13 @@ Queue<Rodada*> gerarCalendario() {
 
 // Imprime as partidas da rodada
 void exibirRodada(const Rodada* r) {
-    std::cout << "\n=== Rodada " << r->getNumero() << " ===" << std::endl;
+    cout << "\n=== Rodada " << r->getNumero() << " ===" << endl;
     for (int i = 0; i < r->getNumPartidas(); i++) {
         const Partida* p = r->getPartida(i);
-        std::cout << std::left
-                  << std::setw(22) << p->getTimeCasa()->getNome()
+        cout << left
+                  << setw(22) << p->getTimeCasa()->getNome()
                   << " x  "
                   << p->getTimeVisitante()->getNome()
-                  << std::endl;
+                  << endl;
     }
 }

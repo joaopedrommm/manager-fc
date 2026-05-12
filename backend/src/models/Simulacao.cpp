@@ -1,10 +1,11 @@
-#include "Simulacao.h"
+﻿#include "Simulacao.h"
 #include "ContextoPartida.h"
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <thread>
 #include <chrono>
+using namespace std;
 
 // Sempre que usamos p. é um ponteiro que usamos para acessar Partida.h
 // Sempre que usamos e. é um ponteiro que usamos para acessar Evento.h
@@ -57,7 +58,7 @@ void Simulacao::simularPartida(Partida& p) {
                        * fatorFase * 1.10f;
         if ((rand() % 10000) / 10000.0f < probCasa) {
             Jogador* g   = ctx.getJogadorAleatorio(p.getTimeCasa());
-            std::string n = g ? g->getNome() : "Jogador";
+            string n = g ? g->getNome() : "Jogador";
             p.addEvento(new EventoGol(minuto, p.getTimeCasa(), n));
             p.addGolCasa();
         }
@@ -67,7 +68,7 @@ void Simulacao::simularPartida(Partida& p) {
                         * fatorFase;
         if ((rand() % 10000) / 10000.0f < probVisit) {
             Jogador* g    = ctx.getJogadorAleatorio(p.getTimeVisitante());
-            std::string n = g ? g->getNome() : "Jogador";
+            string n = g ? g->getNome() : "Jogador";
             p.addEvento(new EventoGol(minuto, p.getTimeVisitante(), n));
             p.addGolVisitante();
         }
@@ -90,11 +91,11 @@ void Simulacao::simularPartida(Partida& p) {
 
 // Exibe o resultado final das outras partidas da rodada
 void Simulacao::exibirResultado(const Partida& p) {
-    std::cout << std::left
-              << std::setw(22) << p.getTimeCasa()->getNome()
+    cout << left
+              << setw(22) << p.getTimeCasa()->getNome()
               << p.getGolsCasa() << " x " << p.getGolsVisitante()
               << "  " << p.getTimeVisitante()->getNome()
-              << std::endl;
+              << endl;
 }
 
 
@@ -108,24 +109,24 @@ void Simulacao::exibirPartidaAoVivo(const Partida& p) {
 
     int acrescimos = duracaoTotal - 90;
 
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "  " << p.getTimeCasa()->getNome()
-              << "  vs  " << p.getTimeVisitante()->getNome() << std::endl;
-    std::cout << "========================================\n" << std::endl;
+    cout << "\n========================================" << endl;
+    cout << "  " << p.getTimeCasa()->getNome()
+              << "  vs  " << p.getTimeVisitante()->getNome() << endl;
+    cout << "========================================\n" << endl;
 
     for (int minuto = 1; minuto <= duracaoTotal; minuto++) {
 
         // Aviso de acréscimos ao chegar no minuto 91
         if (minuto == 91) {
-            std::cout << "\n  +++ " << acrescimos
-                      << " minuto(s) de acrescimo! +++" << std::endl;
+            cout << "\n  +++ " << acrescimos
+                      << " minuto(s) de acrescimo! +++" << endl;
         }
 
         // Cada minuto em sua própria linha
-        std::cout << std::right << std::setw(3) << minuto << "'";
-        std::cout.flush();
+        cout << right << setw(3) << minuto << "'";
+        cout.flush();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        this_thread::sleep_for(chrono::milliseconds(200));
 
         // Verifica eventos nesse minuto
         bool temEvento = false;
@@ -133,33 +134,33 @@ void Simulacao::exibirPartidaAoVivo(const Partida& p) {
             if (e->getMinuto() != minuto) return;
 
             if (e->getTipo() == "INTERVALO") {
-                std::cout << "\n" << std::endl;
-                std::cout << "  --------- INTERVALO ---------" << std::endl;
-                std::cout << "  " << e->getDescricao()         << std::endl;
-                std::cout << "  ------------------------------\n" << std::endl;
+                cout << "\n" << endl;
+                cout << "  --------- INTERVALO ---------" << endl;
+                cout << "  " << e->getDescricao()         << endl;
+                cout << "  ------------------------------\n" << endl;
             } else {
-                std::cout << " >>> ";
-                if      (e->getTipo() == "GOL")      std::cout << "[GOL]     ";
-                else if (e->getTipo() == "AMARELO")  std::cout << "[AMARELO] ";
-                else if (e->getTipo() == "VERMELHO") std::cout << "[VERMELHO]";
+                cout << " >>> ";
+                if      (e->getTipo() == "GOL")      cout << "[GOL]     ";
+                else if (e->getTipo() == "AMARELO")  cout << "[AMARELO] ";
+                else if (e->getTipo() == "VERMELHO") cout << "[VERMELHO]";
 
                 if (e->getTime())
-                    std::cout << " " << e->getTime()->getSigla() << " - ";
+                    cout << " " << e->getTime()->getSigla() << " - ";
 
-                std::cout << e->getDescricao();
+                cout << e->getDescricao();
             }
             temEvento = true;
         });
 
         // Sempre pula linha ao final do minuto (display vertical)
-        std::cout << std::endl;
+        cout << endl;
     }
 
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "  RESULTADO FINAL: "
+    cout << "\n========================================" << endl;
+    cout << "  RESULTADO FINAL: "
               << p.getTimeCasa()->getNome()     << " "
               << p.getGolsCasa()                << " x "
               << p.getGolsVisitante()           << " "
-              << p.getTimeVisitante()->getNome() << std::endl;
-    std::cout << "========================================" << std::endl;
+              << p.getTimeVisitante()->getNome() << endl;
+    cout << "========================================" << endl;
 }

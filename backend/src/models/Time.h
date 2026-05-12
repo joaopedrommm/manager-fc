@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include "Jogador.h"
+using namespace std;
 
 // =============================================================================
 // Time.h  —  Representa um clube do Brasileirão Série A.
@@ -16,17 +17,19 @@
 //   automaticamente qual versão do método chamar — isso é polimorfismo!
 // =============================================================================
 
-const int TAM_ELENCO = 23;
+const int TAM_ELENCO = 15;
 
 class Time {
 private:
     //Atributos básicos do time
     int         id;
-    std::string nome;
-    std::string sigla;
-    int         forca;       
-    float       orcamento;   
-    std::string formacao;
+    string nome;
+    string sigla;
+    int         forca;
+    int         forcaInicial;
+    float       orcamento;
+    float       orcamentoInicial;
+    string formacao;
 
     //Estatísticas do time
     int pontos;
@@ -43,7 +46,7 @@ private:
 
 public:
     // Construtor padrão
-    Time() : id(0), forca(0), orcamento(0.0f),
+    Time() : id(0), forca(0), forcaInicial(0), orcamento(0.0f), orcamentoInicial(0.0f),
              pontos(0), vitorias(0), empates(0),
              derrotas(0), golsPro(0), golsContra(0),
              numJogadores(0) {
@@ -51,10 +54,10 @@ public:
     }
 
     // Construtor completo
-    Time(int id, const std::string& nome, const std::string& sigla,
-         int forca, float orcamento, const std::string& formacao)
-        : id(id), nome(nome), sigla(sigla), forca(forca),
-          orcamento(orcamento), formacao(formacao),
+    Time(int id, const string& nome, const string& sigla,
+         int forca, float orcamento, const string& formacao)
+        : id(id), nome(nome), sigla(sigla), forca(forca), forcaInicial(forca),
+          orcamento(orcamento), orcamentoInicial(orcamento), formacao(formacao),
           pontos(0), vitorias(0), empates(0),
           derrotas(0), golsPro(0), golsContra(0),
           numJogadores(0) {
@@ -94,11 +97,11 @@ public:
 
     // Getters
     int                getId()           const { return id; }
-    const std::string& getNome()         const { return nome; }
-    const std::string& getSigla()        const { return sigla; }
+    const string& getNome()         const { return nome; }
+    const string& getSigla()        const { return sigla; }
     int                getForca()        const { return forca; }
     float              getOrcamento()    const { return orcamento; }
-    const std::string& getFormacao()     const { return formacao; }
+    const string& getFormacao()     const { return formacao; }
     int                getPontos()       const { return pontos; }
     int                getVitorias()     const { return vitorias; }
     int                getEmpates()      const { return empates; }
@@ -114,7 +117,7 @@ public:
     }
 
     // Setters
-    void setFormacao(const std::string& f) { formacao = f; }
+    void setFormacao(const string& f) { formacao = f; }
     void setForca(int f)                   { forca = f; }
     void setOrcamento(float o)             { orcamento = o; }
 
@@ -128,5 +131,20 @@ public:
     // Reseta estatísticas para nova temporada
     void resetStats() {
         pontos = vitorias = empates = derrotas = golsPro = golsContra = 0;
+        forca     = forcaInicial;
+        orcamento = orcamentoInicial;
+    }
+
+    void melhorarJogadores(int delta) {
+        for (int i = 0; i < numJogadores; i++)
+            elenco[i]->setHabilidade(elenco[i]->getHabilidade() + delta);
+    }
+
+    void limparElenco() {
+        for (int i = 0; i < numJogadores; i++) {
+            delete elenco[i];
+            elenco[i] = nullptr;
+        }
+        numJogadores = 0;
     }
 };

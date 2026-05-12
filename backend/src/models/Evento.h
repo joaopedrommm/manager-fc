@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <cstdlib>
+using namespace std;
 
 // Evento é uma classe abstrata que tem como derivadas as 4 situações que nós julgamos como chaves durante uma partida. 
 
@@ -16,8 +17,8 @@ public:
     virtual ~Evento() {}
 
     // Abstração da classe Evento, pois o tipo e descrição dependem evento especifico
-    virtual std::string getDescricao() const = 0;
-    virtual std::string getTipo()      const = 0;
+    virtual string getDescricao() const = 0;
+    virtual string getTipo()      const = 0;
 
     // Getters
     int   getMinuto() const { return minuto; }
@@ -28,14 +29,14 @@ public:
 
 class EventoGol : public Evento {
 private:
-    std::string nomeJogador;
+    string nomeJogador;
 public:
-    EventoGol(int minuto, Time* time, const std::string& nomeJogador)
+    EventoGol(int minuto, Time* time, const string& nomeJogador)
         : Evento(minuto, time), nomeJogador(nomeJogador) {}
 
-    std::string getTipo() const override { return "GOL"; }
+    string getTipo() const override { return "GOL"; }
 
-    std::string getDescricao() const override {
+    string getDescricao() const override {
         const char* frases[] = {
             "Que golaco!",
             "Chute certeiro no canto!",
@@ -51,14 +52,14 @@ public:
 
 class EventoCartaoAmarelo : public Evento {
 private:
-    std::string nomeJogador;
+    string nomeJogador;
 public:
-    EventoCartaoAmarelo(int minuto, Time* time, const std::string& nomeJogador)
+    EventoCartaoAmarelo(int minuto, Time* time, const string& nomeJogador)
         : Evento(minuto, time), nomeJogador(nomeJogador) {}
 
-    std::string getTipo() const override { return "AMARELO"; }
+    string getTipo() const override { return "AMARELO"; }
 
-    std::string getDescricao() const override {
+    string getDescricao() const override {
         const char* frases[] = {
             "Entrada atrasada.",
             "Reclamacao com o arbitro.",
@@ -72,14 +73,14 @@ public:
 
 class EventoCartaoVermelho : public Evento {
 private:
-    std::string nomeJogador;
+    string nomeJogador;
 public:
-    EventoCartaoVermelho(int minuto, Time* time, const std::string& nomeJogador)
+    EventoCartaoVermelho(int minuto, Time* time, const string& nomeJogador)
         : Evento(minuto, time), nomeJogador(nomeJogador) {}
 
-    std::string getTipo() const override { return "VERMELHO"; }
+    string getTipo() const override { return "VERMELHO"; }
 
-    std::string getDescricao() const override {
+    string getDescricao() const override {
         const char* frases[] = {
             "Entrada violenta - expulso de campo!",
             "Segundo amarelo - tchau!",
@@ -99,10 +100,10 @@ public:
     EventoIntervalo(int minuto, int golsCasa, int golsVisitante)
         : Evento(minuto, nullptr), golsCasa(golsCasa), golsVisitante(golsVisitante) {}
 
-    std::string getTipo() const override { return "INTERVALO"; }
+    string getTipo() const override { return "INTERVALO"; }
 
-    std::string getDescricao() const override {
-        return "Placar parcial: " + std::to_string(golsCasa)
-             + " x " + std::to_string(golsVisitante);
+    string getDescricao() const override {
+        return "Placar parcial: " + to_string(golsCasa)
+             + " x " + to_string(golsVisitante);
     }
 };

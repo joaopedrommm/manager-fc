@@ -1,15 +1,16 @@
-#include "Formacoes.h"
+﻿#include "Formacoes.h"
+using namespace std;
 
 // Aplicação da vantagem tática entre as formações
 namespace Formacoes {
 
-    int indice(const std::string& formacao) {
+    int indice(const string& formacao) {
         for (int i = 0; i < NUM_FORMACOES; i++)
             if (NOMES[i] == formacao) return i;
         return -1;
     }
 
-    int getModificador(const std::string& atacante, const std::string& defensor) {
+    int getModificador(const string& atacante, const string& defensor) {
         int i = indice(atacante);
         int j = indice(defensor);
         if (i == -1 || j == -1) return 0;

@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "Jogador.h"
+using namespace std;
 
 // Classe filha (derivada) de Jogador, adiciona os atributos e métodos para os jogadores de linha
 
@@ -13,7 +14,7 @@ private:
 public:
     // Jogador base é o meio campista, então equilibra os atributos e agressividade
     // Construtor
-    JogadorDeCampo(int id, const std::string& nome, const std::string& posicao,
+    JogadorDeCampo(int id, const string& nome, const string& posicao,
                    int habilidade, int velocidade, int passe, int chute,
                    Agressividade agr = Agressividade::MEDIA)
         : Jogador(id, nome, posicao, habilidade, agr),
@@ -25,7 +26,7 @@ public:
         return forcaBase * (media / 100.0f);
     }
 
-    std::string getTipo() const override { return "Jogador de Campo (" + getPosicao() + ")"; }
+    string getTipo() const override { return "Jogador de Campo (" + getPosicao() + ")"; }
 
     // Getters
     int getVelocidade() const { return velocidade; }
@@ -37,7 +38,7 @@ public:
 class Atacante : public JogadorDeCampo {
 public:
     // Construtor
-    Atacante(int id, const std::string& nome, int habilidade,
+    Atacante(int id, const string& nome, int habilidade,
              int velocidade, int passe, int chute)
         : JogadorDeCampo(id, nome, "ATA", habilidade, velocidade, passe, chute,
                          Agressividade::MEDIA) {}
@@ -48,14 +49,14 @@ public:
         return forcaBase * (media / 100.0f);
     }
 
-    std::string getTipo() const override { return "Atacante"; }
+    string getTipo() const override { return "Atacante"; }
 };
 
 
 class Defensor : public JogadorDeCampo {
 public:
     // Ajuste na agressividade, pois defensores costumam fazer mais faltas
-    Defensor(int id, const std::string& nome, int habilidade,
+    Defensor(int id, const string& nome, int habilidade,
              int velocidade, int passe, int chute)
         : JogadorDeCampo(id, nome, "ZAG", habilidade, velocidade, passe, chute,
                          Agressividade::ALTA) {}
@@ -66,5 +67,5 @@ public:
         return forcaBase * (media / 100.0f);
     }
 
-    std::string getTipo() const override { return "Defensor"; }
+    string getTipo() const override { return "Defensor"; }
 };
