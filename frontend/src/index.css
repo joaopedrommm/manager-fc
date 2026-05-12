@@ -664,3 +664,12 @@ body {
   transition: background 0.1s;
 }
 .mfc-formacao-card:hover { background: var(--c-panel-hi); }
+
+/* ── Credits link ───────────────────────────────────────────────────────── */
+.mfc-credits-link {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.mfc-credits-link:hover { color: var(--c-text); }

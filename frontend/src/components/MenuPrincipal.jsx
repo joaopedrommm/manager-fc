@@ -7,7 +7,7 @@ const TIMES_SIGLAS = {
   11:'COR',12:'CRU',13:'BAH',14:'SAN',15:'RBB',16:'CHA',17:'CFC',18:'VIT',19:'MIR',20:'REM',
 };
 
-export default function MenuPrincipal({ onNovoJogo }) {
+export default function MenuPrincipal({  onNovoJogo, onCreditos }) {
   return (
     <div className="mfc-screen" style={{
       display: 'flex', flexDirection: 'column',
@@ -46,7 +46,7 @@ export default function MenuPrincipal({ onNovoJogo }) {
           <button className="mfc-btn mfc-btn-primary mfc-btn-lg" onClick={onNovoJogo}>
             ▶ NOVO JOGO
           </button>
-          <button className="mfc-btn mfc-btn-lg" style={{ opacity: 0.5, cursor: 'default' }}>
+          <button className="mfc-btn mfc-btn-lg" onClick={onCreditos}>
             CRÉDITOS
           </button>
         </div>

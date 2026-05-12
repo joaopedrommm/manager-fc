@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import Simulacao from './components/Simulação';
 import PosJogo from './components/Pos-jogo';
 import FimTemporada from './components/FimTemporada';
+import Creditos from './components/Creditos';
 
 export default function App() {
   const [tela, setTela] = useState('menu');
@@ -23,7 +24,8 @@ export default function App() {
 
   return (
     <>
-      {tela === 'menu'      && <MenuPrincipal onNovoJogo={() => setTela('selecao')} />}
+      {tela === 'menu'      && <MenuPrincipal onNovoJogo={() => setTela('selecao')} onCreditos={() => setTela('creditos')} />}
+      {tela === 'creditos'  && <Creditos onVoltar={() => setTela('menu')} />} 
       {tela === 'selecao'   && <SelecaoClube onVoltar={() => setTela('menu')} onConfirmar={handleConfirmarClube} />}
       {tela === 'dashboard' && (
         <Dashboard
@@ -40,7 +42,7 @@ export default function App() {
       {tela === 'fim-temporada' && (
         <FimTemporada meuTimeId={clubeSelecionado?.id} onVoltar={() => { setClubeSelecionado(null); setTela('menu'); }} />
       )}
-
+      
     </>
   );
 }
