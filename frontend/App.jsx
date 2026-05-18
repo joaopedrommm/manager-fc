@@ -31,8 +31,8 @@ function PaginaDivulgacao() {
           <a href="https://github.com/joaopedrommm/manager-fc" target="_blank" rel="noreferrer" className="btn-link repo">
             Ver Código no GitHub
           </a>
-          <a href="/relatorio.pdf" target="_blank" className="btn-link doc">
-            Ler Relatório Completo (PDF)
+          <a href="https://docs.google.com/document/d/1Y_0ITu7_dFNu9kH7ujvDrg9ZE2jU9FrPhPhv3Z-2A9c/edit?usp=sharing" target="_blank" className="btn-link doc">
+            Ler Relatório Completo
           </a>
           <a href="https://youtube.com/..." target="_blank" rel="noreferrer" className="btn-link video">
             Assistir Demonstração no YouTube
