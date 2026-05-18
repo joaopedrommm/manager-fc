@@ -1,0 +1,10 @@
+# Binários compilados
+manager-fc
+manager-fc.exe
+
+# Arquivos de objeto
+*.o
+*.out
+
+# Pastas de build
+build/
